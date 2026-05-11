@@ -75,7 +75,7 @@
   <header class="topbar">
     <div class="search-wrap">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" class="search-input" id="search-input" placeholder="Search for article, video or document" />
+      <input type="text" class="search-input" id="search-input" placeholder="Search for task, submission or member" />
     </div>
     <div class="topbar-actions">
       <button class="icon-btn theme-toggle" id="theme-toggle" title="Toggle theme">
@@ -95,92 +95,136 @@
 
   <div class="content-scroll">
 
-    <!-- WELCOME -->
-    <section class="welcome-card">
-      <div class="welcome-text">
-        <h1>Hello John,</h1>
-        <p>Explore content more deeply and effectively</p>
-      </div>
-      <div class="stat-cards">
-        <div class="stat-card" id="stat-articles">
-          <div class="stat-header">
-            <span>Articles</span>
-            <button class="arrow-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </button>
-          </div>
-          <p class="stat-sub">Read articles, statistics.</p>
-          <div class="stat-number" data-target="55">0</div>
+    
+    <!-- AVAILABLE TASKS CARDS -->
+    <section class="tasks-cards-section">
+      <div class="tasks-cards-header">
+        <div class="tasks-cards-title-wrap">
+          <h3>Available tasks</h3>
+          <span class="tasks-cards-count">8 new</span>
         </div>
-        <div class="stat-card" id="stat-videos">
-          <div class="stat-header">
-            <span>Videos</span>
-            <button class="arrow-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </button>
-          </div>
-          <p class="stat-sub">Watched summary</p>
-          <div class="stat-number" data-target="12">0</div>
-        </div>
-        <div class="stat-card" id="stat-docs">
-          <div class="stat-header">
-            <span>Documents</span>
-            <button class="arrow-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-            </button>
-          </div>
-          <p class="stat-sub">Archived documents.</p>
-          <div class="stat-number" data-target="24">0</div>
-        </div>
+        <p class="tasks-cards-sub">Pick a task and start earning</p>
       </div>
 
-      <!-- UPGRADE BANNER -->
-      <div class="upgrade-banner" id="upgrade-banner">
-        <div class="upgrade-text">
-          <h2>Switch to Summarization<br/>Content Professional today!</h2>
+      <div class="tasks-grid">
+        <div class="task-card">
+          <div class="task-card-header">
+            <span class="task-date">Posted Today</span>
+            <span class="task-new-badge">New</span>
+          </div>
+          <h4 class="task-title">UI Kit Template</h4>
+          <div class="task-tags">
+            <span class="task-tag">Design</span>
+            <span class="task-tag">Template</span>
+            <span class="task-tag">3 days</span>
+          </div>
+          <div class="task-card-footer">
+            <div class="task-members">
+              <div class="task-avatar">A</div>
+              <div class="task-avatar">M</div>
+              <div class="task-avatar">K</div>
+              <span class="task-avatar-more">+2</span>
+            </div>
+            <span class="task-reward">$25</span>
+          </div>
         </div>
-        <div class="upgrade-right">
-          <span class="pro-badge">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            PRO
-          </span>
-          <button class="upgrade-arrow-btn" id="upgrade-arrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-          </button>
+
+        <div class="task-card">
+          <div class="task-card-header">
+            <span class="task-date">Posted 2 days ago</span>
+          </div>
+          <h4 class="task-title">Social Media Guide</h4>
+          <div class="task-tags">
+            <span class="task-tag">Guide</span>
+            <span class="task-tag">5 days</span>
+          </div>
+          <div class="task-card-footer">
+            <div class="task-members">
+              <div class="task-avatar">L</div>
+              <div class="task-avatar">S</div>
+            </div>
+            <span class="task-reward">$15</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-card-header">
+            <span class="task-date">Posted 3 days ago</span>
+            <span class="task-new-badge">New</span>
+          </div>
+          <h4 class="task-title">Notion Template Pack</h4>
+          <div class="task-tags">
+            <span class="task-tag">Template</span>
+            <span class="task-tag">Productivity</span>
+            <span class="task-tag">7 days</span>
+          </div>
+          <div class="task-card-footer">
+            <div class="task-members">
+              <div class="task-avatar">J</div>
+              <div class="task-avatar">R</div>
+              <div class="task-avatar">T</div>
+            </div>
+            <span class="task-reward">$35</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-card-header">
+            <span class="task-date">Posted 5 days ago</span>
+          </div>
+          <h4 class="task-title">Icon Set Design</h4>
+          <div class="task-tags">
+            <span class="task-tag">Design</span>
+            <span class="task-tag">4 days</span>
+          </div>
+          <div class="task-card-footer">
+            <div class="task-members">
+              <div class="task-avatar">D</div>
+            </div>
+            <span class="task-reward">$20</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-card-header">
+            <span class="task-date">Posted 1 week ago</span>
+          </div>
+          <h4 class="task-title">Mini Course: Figma Basics</h4>
+          <div class="task-tags">
+            <span class="task-tag">Course</span>
+            <span class="task-tag">Video</span>
+            <span class="task-tag">10 days</span>
+          </div>
+          <div class="task-card-footer">
+            <div class="task-members">
+              <div class="task-avatar">P</div>
+              <div class="task-avatar">N</div>
+            </div>
+            <span class="task-reward">$50</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <div class="task-card-header">
+            <span class="task-date">Posted 1 week ago</span>
+            <span class="task-new-badge">New</span>
+          </div>
+          <h4 class="task-title">Landing Page Copy</h4>
+          <div class="task-tags">
+            <span class="task-tag">Copywriting</span>
+            <span class="task-tag">3 days</span>
+          </div>
+          <div class="task-card-footer">
+            <div class="task-members">
+              <div class="task-avatar">E</div>
+              <div class="task-avatar">V</div>
+            </div>
+            <span class="task-reward">$12</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- LATEST SUMMARIES -->
-    <section class="summaries-section">
-      <div class="summaries-header">
-        <div class="summaries-title-wrap">
-          <h3>Latest summaries</h3>
-          <span class="summaries-count-badge">91 summaries</span>
-        </div>
-        <p class="summaries-sub">Check out your recent summaries</p>
-        <div class="filter-tabs" id="filter-tabs">
-          <button class="tab-btn active" data-tab="all" id="tab-all">All</button>
-          <button class="tab-btn" data-tab="articles" id="tab-articles">Articles</button>
-          <button class="tab-btn" data-tab="videos" id="tab-videos">Videos</button>
-          <button class="tab-btn" data-tab="docs" id="tab-docs">Docs</button>
-        </div>
-      </div>
-
-      <table class="summaries-table" id="summaries-table">
-        <thead>
-          <tr>
-            <th>Resource</th>
-            <th>Reduced by</th>
-            <th>Before</th>
-            <th>After</th>
-          </tr>
-        </thead>
-        <tbody id="summaries-tbody">
-          <!-- injected by JS -->
-        </tbody>
-      </table>
-    </section>
 
   </div>
 </main>
@@ -188,28 +232,13 @@
 <!-- ═══════════ RIGHT PANEL ═══════════ -->
 <aside class="right-panel">
 
-  <!-- SUMMARY HERO -->
-  <div class="summary-hero">
-    <div class="hero-left">
-      <div class="hero-logo">S</div>
-      <div>
-        <p class="hero-count"><span id="count-anim">0</span>+</p>
-        <p class="hero-label">Summaries</p>
-      </div>
-    </div>
-    <div class="hero-time">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <strong>16 hours</strong>
-      <span>Saved</span>
-    </div>
-  </div>
-
-  <!-- USAGE GAUGE -->
+  
+  <!-- PROGRESS GAUGE -->
   <div class="usage-card">
     <div class="usage-card-header">
       <div>
-        <p class="usage-title">Your usage</p>
-        <p class="usage-plan">Current plan: Personal</p>
+        <p class="usage-title">Your progress</p>
+        <p class="usage-plan">Level: Beginner</p>
       </div>
       <button class="dots-btn" id="usage-dots">⋯</button>
     </div>
@@ -217,14 +246,14 @@
     <div class="gauge-wrap">
       <canvas id="gauge-canvas" width="220" height="130"></canvas>
       <div class="gauge-center">
-        <span class="gauge-pct" id="gauge-pct">0%</span>
+        <span class="gauge-pct" id="gauge-pct">68%</span>
       </div>
     </div>
-    <p class="gauge-sub">19 summaries used of 30</p>
+    <p class="gauge-sub">68% to next level</p>
 
     <div class="usage-actions">
-      <button class="btn-pricing" id="btn-pricing">Pricing plans</button>
-      <button class="btn-upgrade-main" id="btn-upgrade-main">Upgrade</button>
+      <button class="btn-pricing" id="btn-pricing">View achievements</button>
+      <button class="btn-upgrade-main" id="btn-upgrade-main">Level up</button>
     </div>
   </div>
 
@@ -239,16 +268,24 @@
         <div class="message-avatar">A</div>
         <div class="message-content">
           <p class="message-sender">Alex</p>
-          <p class="message-text">Hey everyone! Just finished the new template task.</p>
-          <p class="message-time">2 min ago</p>
+          <p class="message-text">Just submitted the UI kit task! 💎</p>
+          <p class="message-time">5 min ago</p>
         </div>
       </div>
       <div class="chat-message">
         <div class="message-avatar">M</div>
         <div class="message-content">
           <p class="message-sender">Maria</p>
-          <p class="message-text">Great work! Which one?</p>
-          <p class="message-time">1 min ago</p>
+          <p class="message-text">Nice! How was the reward?</p>
+          <p class="message-time">3 min ago</p>
+        </div>
+      </div>
+      <div class="chat-message">
+        <div class="message-avatar">A</div>
+        <div class="message-content">
+          <p class="message-sender">Alex</p>
+          <p class="message-text">$25 for that one. Working on the next one now 🚀</p>
+          <p class="message-time">2 min ago</p>
         </div>
       </div>
     </div>
