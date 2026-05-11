@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digesto — Content Dashboard</title>
-  <meta name="description" content="Digesto — Explore content more deeply and effectively with AI-powered summarization." />
+  <title>EM Apex — Community Dashboard</title>
+  <meta name="description" content="EM Apex — Exclusive community for digital creators. Complete tasks, earn rewards, and grow together." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -15,44 +15,40 @@
 <!-- ═══════════ SIDEBAR ═══════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon">S</div>
-    <span class="logo-text">Content<sup>AI</sup></span>
+    <div class="logo-icon">E</div>
+    <span class="logo-text">EM<sup>Apex</sup></span>
   </div>
 
   <button class="btn-summarize" id="btn-summarize">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-    New Summarize
+    New Task
   </button>
 
   <nav class="nav-section">
-    <p class="nav-label">DIGESTO</p>
+    <p class="nav-label">EM APEX</p>
     <a href="#" class="nav-item active" id="nav-dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </a>
-    <a href="#" class="nav-item" id="nav-articles">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Articles
+    <a href="#" class="nav-item" id="nav-tasks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tasks
     </a>
-    <a href="#" class="nav-item" id="nav-videos">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-      Videos
+    <a href="#" class="nav-item" id="nav-submissions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Submissions
     </a>
-    <a href="#" class="nav-item" id="nav-documents">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-      Documents
+    <a href="#" class="nav-item" id="nav-earnings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Earnings
     </a>
   </nav>
 
   <nav class="nav-section">
-    <p class="nav-label">PRODUCTS</p>
-    <a href="#" class="nav-item" id="nav-plagiarism">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Plagiarism Checker
-    </a>
-    <a href="#" class="nav-item" id="nav-api">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1 0 11.314 11.314A8 8 0 0 0 6.343 6.343z"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
-      Developer API
+    <p class="nav-label">ADMIN</p>
+    <a href="#" class="nav-item" id="nav-members">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Members
     </a>
   </nav>
 
@@ -69,24 +65,7 @@
   </nav>
 
   <div class="sidebar-footer">
-    <div class="plan-info">
-      <div class="plan-badges">
-        <span class="badge-personal">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-          Personal
-        </span>
-        <button class="badge-upgrade" id="badge-upgrade-btn">Upgrade</button>
       </div>
-      <div class="plan-usage-bar">
-        <div class="plan-usage-fill" style="width: 63%"></div>
-      </div>
-      <p class="plan-usage-text">19 Summaries used of 30</p>
-    </div>
-    <a href="#" class="nav-item get-app" id="nav-getapp">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Get the app
-    </a>
-  </div>
 </aside>
 
 <!-- ═══════════ MAIN ═══════════ -->
@@ -249,44 +228,36 @@
     </div>
   </div>
 
-  <!-- TOP SOURCES -->
-  <div class="sources-card">
-    <div class="sources-header">
-      <div>
-        <p class="sources-title">Top sources</p>
-        <p class="sources-sub">List of popular sources</p>
-      </div>
-      <button class="dots-btn" id="sources-dots">⋯</button>
+  <!-- CHAT -->
+  <div class="chat-card">
+    <div class="chat-header">
+      <p class="chat-title">Community Chat</p>
+      <p class="chat-sub">20 members online</p>
     </div>
-
-    <div class="sources-bar-wrap">
-      <div class="sources-bar">
-        <div class="sources-bar-seg seg-green" style="width:50%"></div>
-        <div class="sources-bar-seg seg-blue" style="width:35%"></div>
-        <div class="sources-bar-seg seg-gray" style="width:15%"></div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-message">
+        <div class="message-avatar">A</div>
+        <div class="message-content">
+          <p class="message-sender">Alex</p>
+          <p class="message-text">Hey everyone! Just finished the new template task.</p>
+          <p class="message-time">2 min ago</p>
+        </div>
+      </div>
+      <div class="chat-message">
+        <div class="message-avatar">M</div>
+        <div class="message-content">
+          <p class="message-sender">Maria</p>
+          <p class="message-text">Great work! Which one?</p>
+          <p class="message-time">1 min ago</p>
+        </div>
       </div>
     </div>
-
-    <ul class="sources-list">
-      <li class="source-item" id="src-google">
-        <div class="source-icon google-icon">G</div>
-        <div class="source-dot dot-blue"></div>
-        <span class="source-name">news.google.com</span>
-        <span class="source-pct">15%</span>
-      </li>
-      <li class="source-item" id="src-techcrunch">
-        <div class="source-icon tc-icon">TC</div>
-        <div class="source-dot dot-teal"></div>
-        <span class="source-name">techcrunch.com</span>
-        <span class="source-pct">35%</span>
-      </li>
-      <li class="source-item" id="src-mit">
-        <div class="source-icon mit-icon">M</div>
-        <div class="source-dot dot-white"></div>
-        <span class="source-name">news.mit.edu</span>
-        <span class="source-pct">50%</span>
-      </li>
-    </ul>
+    <div class="chat-input-wrap">
+      <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." />
+      <button class="chat-send-btn" id="chat-send-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
   </div>
 
 </aside>
