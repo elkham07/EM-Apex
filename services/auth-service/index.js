@@ -18,9 +18,14 @@ app.get('/health', (req, res) => {
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
+const { connectNats } = require('./config/nats');
+
 // Database connection and server start
-sequelize.sync().then(() => {
+sequelize.sync().then(async () => {
   console.log('Database connected and models synced');
+  
+  await connectNats();
+  
   app.listen(PORT, () => {
     console.log(`Auth Service is running on port ${PORT}`);
   });

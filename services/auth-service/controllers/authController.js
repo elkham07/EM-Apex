@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { getNats } = require('../config/nats');
+const { StringCodec } = require('nats');
+const sc = StringCodec();
 
 exports.register = async (req, res) => {
   try {
@@ -22,6 +25,17 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       role: role || 'worker'
     });
+
+    try {
+      const nats = getNats();
+      nats.publish('user.registered', sc.encode(JSON.stringify({
+        userId: newUser.id,
+        email: newUser.email,
+        role: newUser.role
+      })));
+    } catch (natsErr) {
+      console.error('Failed to publish NATS event', natsErr);
+    }
 
     res.status(201).json({ 
       message: 'User registered successfully',
