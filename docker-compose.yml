@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # Frontend Apps (Served via Nginx)
+  # ==========================================
+  worker-app:
+    image: nginx:alpine
+    container_name: emapex_worker_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./worker-app:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - emapex_net
+
+  admin-app:
+    image: nginx:alpine
+    container_name: emapex_admin_app
+    ports:
+      - "8081:80"
+    volumes:
+      - ./admin-app:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - emapex_net
+
+  # ==========================================
+  # Infrastructure (Database, Cache, Message Broker)
+  # ==========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: emapex_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: emapex
+    ports:
+      - "5440:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - emapex_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: emapex_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+    networks:
+      - emapex_net
+
+  nats:
+    image: nats:alpine
+    container_name: emapex_nats
+    ports:
+      - "4222:4222" # Client port
+      - "8222:8222" # HTTP management port
+    command: ["-m", "8222"]
+    restart: unless-stopped
+    networks:
+      - emapex_net
+
+networks:
+  emapex_net:
+    driver: overlay # Ready for Docker Swarm
+    attachable: true
+
+volumes:
+  pgdata:
+  redisdata:
