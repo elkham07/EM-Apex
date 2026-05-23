@@ -14,9 +14,14 @@ app.use(express.json());
 // Routes
 app.use('/', taskRoutes);
 
+const { connectRedis } = require('./config/redis');
+
 // Database connection and server start
-sequelize.sync().then(() => {
+sequelize.sync().then(async () => {
   console.log('Database connected and Task model synced');
+  
+  await connectRedis();
+  
   app.listen(PORT, () => {
     console.log(`Task Service is running on port ${PORT}`);
   });
