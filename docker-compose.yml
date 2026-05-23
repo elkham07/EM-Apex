@@ -65,6 +65,25 @@ services:
     networks:
       - emapex_net
 
+  task-service:
+    build:
+      context: ./services/task-service
+    container_name: emapex_task_service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=emapex
+      - DB_USER=admin
+      - DB_PASSWORD=password
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - emapex_net
+
   # ==========================================
   # Infrastructure (Database, Cache, Message Broker)
   # ==========================================
