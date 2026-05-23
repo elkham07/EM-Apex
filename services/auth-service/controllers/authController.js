@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { getNats } = require('../config/nats');
 const { StringCodec } = require('nats');
+const { userRegistrationsCounter, userLoginsCounter } = require('../config/metrics');
 const sc = StringCodec();
 
 exports.register = async (req, res) => {
@@ -37,6 +38,9 @@ exports.register = async (req, res) => {
       console.error('Failed to publish NATS event', natsErr);
     }
 
+    // Increment Prometheus counter
+    userRegistrationsCounter.inc({ role: newUser.role });
+
     res.status(201).json({ 
       message: 'User registered successfully',
       user: { id: newUser.id, email: newUser.email, role: newUser.role }
@@ -54,12 +58,14 @@ exports.login = async (req, res) => {
     // Find user
     const user = await User.findOne({ where: { email } });
     if (!user) {
+      userLoginsCounter.inc({ role: 'unknown', status: 'failed' });
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      userLoginsCounter.inc({ role: user.role, status: 'failed' });
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -76,6 +82,8 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '1d' }
     );
+
+    userLoginsCounter.inc({ role: user.role, status: 'success' });
 
     res.status(200).json({ 
       message: 'Login successful',

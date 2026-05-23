@@ -15,6 +15,13 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', service: 'auth-service' });
 });
 
+// Prometheus Metrics Endpoint
+const { register } = require('./config/metrics');
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
