@@ -27,6 +27,21 @@ services:
       - emapex_net
 
   # ==========================================
+  # Microservices
+  # ==========================================
+  auth-service:
+    build:
+      context: ./services/auth-service
+    container_name: emapex_auth_service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+    restart: unless-stopped
+    networks:
+      - emapex_net
+
+  # ==========================================
   # Infrastructure (Database, Cache, Message Broker)
   # ==========================================
   postgres:
