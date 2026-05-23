@@ -42,6 +42,7 @@ services:
       - DB_NAME=emapex
       - DB_USER=admin
       - DB_PASSWORD=password
+      - JWT_SECRET=supersecret_emapex_key_123
     restart: unless-stopped
     networks:
       - emapex_net
