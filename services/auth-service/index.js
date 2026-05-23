@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const sequelize = require('./config/database');
+const User = require('./models/User');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,6 +24,12 @@ app.post('/api/auth/login', (req, res) => {
   res.status(200).json({ token: 'mock-jwt-token' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Auth Service is running on port ${PORT}`);
+// Database connection and server start
+sequelize.sync().then(() => {
+  console.log('Database connected and models synced');
+  app.listen(PORT, () => {
+    console.log(`Auth Service is running on port ${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Unable to connect to the database:', err);
 });
