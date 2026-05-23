@@ -95,3 +95,128 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// Google OAuth Redirect
+exports.googleRedirect = (req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID || 'mock_client_id';
+  const redirectUri = encodeURIComponent(process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/auth/google/callback');
+  const scope = encodeURIComponent('profile email');
+  const state = 'security_token';
+  
+  if (process.env.GOOGLE_CLIENT_ID) {
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
+    return res.redirect(googleAuthUrl);
+  } else {
+    console.log('Mocking Google OAuth redirect...');
+    const mockCallbackUrl = `/api/auth/google/callback?code=mock_auth_code_12345&state=${state}`;
+    return res.redirect(mockCallbackUrl);
+  }
+};
+
+// Google OAuth Callback
+exports.googleCallback = async (req, res) => {
+  try {
+    const { code } = req.query;
+    if (!code) {
+      return res.status(400).json({ message: 'Authorization code missing' });
+    }
+    
+    let email = 'mock_google_user@emapex.com';
+    if (code === 'mock_auth_code_12345') {
+      email = 'google_worker_test@emapex.com';
+    }
+
+    let user = await User.findOne({ where: { email } });
+    if (!user) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('random_password_123!', salt);
+      
+      user = await User.create({
+        email,
+        password: hashedPassword,
+        role: 'worker'
+      });
+      
+      try {
+        const nats = getNats();
+        nats.publish('user.registered', sc.encode(JSON.stringify({
+          userId: user.id,
+          email: user.email,
+          role: user.role
+        })));
+      } catch (natsErr) {
+        console.error('Failed to publish NATS user registration event', natsErr);
+      }
+    }
+
+    const payload = { user: { id: user.id, role: user.role } };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '1d' });
+
+    res.redirect(`http://localhost:8080/index.html?token=${token}&workerId=${user.id}`);
+  } catch (error) {
+    console.error('Google Callback Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Google SDK Token Login
+exports.googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: 'ID Token is required' });
+    }
+    
+    let email = 'mock_google_sdk_user@emapex.com';
+    
+    let user = await User.findOne({ where: { email } });
+    if (!user) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('random_password_123!', salt);
+      
+      user = await User.create({
+        email,
+        password: hashedPassword,
+        role: 'worker'
+      });
+      
+      try {
+        const nats = getNats();
+        nats.publish('user.registered', sc.encode(JSON.stringify({
+          userId: user.id,
+          email: user.email,
+          role: user.role
+        })));
+      } catch (natsErr) {
+        console.error('Failed to publish NATS user registration event', natsErr);
+      }
+    }
+
+    const payload = { user: { id: user.id, role: user.role } };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '1d' });
+
+    res.status(200).json({
+      message: 'Google login successful',
+      token,
+      user: { id: user.id, email: user.email, role: user.role }
+    });
+  } catch (error) {
+    console.error('Google Login SDK Error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Get User By ID (Inter-service API)
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id, { attributes: ['id', 'email', 'role'] });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('GetUserById error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
