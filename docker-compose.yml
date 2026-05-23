@@ -127,6 +127,27 @@ services:
     networks:
       - emapex_net
 
+  profile-service:
+    build:
+      context: ./services/profile-service
+    container_name: emapex_profile_service
+    ports:
+      - "3006:3006"
+    environment:
+      - PORT=3006
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=emapex
+      - DB_USER=admin
+      - DB_PASSWORD=password
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - nats
+    networks:
+      - emapex_net
+
   # ==========================================
   # Infrastructure (Database, Cache, Message Broker)
   # ==========================================
