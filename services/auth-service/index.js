@@ -15,14 +15,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', service: 'auth-service' });
 });
 
-// Mock endpoints for now
-app.post('/api/auth/register', (req, res) => {
-  res.status(201).json({ message: 'User registered' });
-});
-
-app.post('/api/auth/login', (req, res) => {
-  res.status(200).json({ token: 'mock-jwt-token' });
-});
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 
 // Database connection and server start
 sequelize.sync().then(() => {
