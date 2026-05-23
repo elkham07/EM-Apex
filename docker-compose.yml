@@ -37,6 +37,11 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=emapex
+      - DB_USER=admin
+      - DB_PASSWORD=password
     restart: unless-stopped
     networks:
       - emapex_net
