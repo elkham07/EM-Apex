@@ -27,7 +27,7 @@ services:
       - emapex_net
 
   # ==========================================
-  # API Gateway
+  # API Gateway (Public Access Point)
   # ==========================================
   api-gateway:
     build:
@@ -38,6 +38,11 @@ services:
     environment:
       - PORT=3000
       - AUTH_SERVICE_URL=http://auth-service:3001
+      - TASK_SERVICE_URL=http://task-service:3002
+      - SUBMISSION_SERVICE_URL=http://submission-service:3003
+      - PAYMENT_SERVICE_URL=http://payment-service:3004
+      - PROFILE_SERVICE_URL=http://profile-service:3006
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3005
     restart: unless-stopped
     depends_on:
       - auth-service
@@ -45,23 +50,21 @@ services:
       - emapex_net
 
   # ==========================================
-  # Microservices
+  # Microservices (Internal only - NO public ports exposed)
   # ==========================================
   auth-service:
     build:
       context: ./services/auth-service
     container_name: emapex_auth_service
-    ports:
-      - "3001:3001"
     environment:
       - PORT=3001
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=emapex
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - JWT_SECRET=supersecret_emapex_key_123
-      - NATS_URL=nats://nats:4222
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - NATS_URL=${NATS_URL}
     restart: unless-stopped
     networks:
       - emapex_net
@@ -70,15 +73,13 @@ services:
     build:
       context: ./services/task-service
     container_name: emapex_task_service
-    ports:
-      - "3002:3002"
     environment:
       - PORT=3002
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=emapex
-      - DB_USER=admin
-      - DB_PASSWORD=password
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     restart: unless-stopped
     depends_on:
       - postgres
@@ -89,16 +90,14 @@ services:
     build:
       context: ./services/submission-service
     container_name: emapex_submission_service
-    ports:
-      - "3003:3003"
     environment:
       - PORT=3003
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=emapex
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - NATS_URL=nats://nats:4222
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - NATS_URL=${NATS_URL}
     restart: unless-stopped
     depends_on:
       - postgres
@@ -110,17 +109,15 @@ services:
     build:
       context: ./services/payment-service
     container_name: emapex_payment_service
-    ports:
-      - "3004:3004"
     environment:
       - PORT=3004
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=emapex
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - NATS_URL=nats://nats:4222
-      - STRIPE_SECRET_KEY=sk_test_mock
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - NATS_URL=${NATS_URL}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
     restart: unless-stopped
     depends_on:
       - postgres
@@ -132,16 +129,14 @@ services:
     build:
       context: ./services/profile-service
     container_name: emapex_profile_service
-    ports:
-      - "3006:3006"
     environment:
       - PORT=3006
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=emapex
-      - DB_USER=admin
-      - DB_PASSWORD=password
-      - NATS_URL=nats://nats:4222
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - NATS_URL=${NATS_URL}
     restart: unless-stopped
     depends_on:
       - postgres
@@ -153,15 +148,13 @@ services:
     build:
       context: ./services/notification-service
     container_name: emapex_notification_service
-    ports:
-      - "3005:3005"
     environment:
       - PORT=3005
-      - NATS_URL=nats://nats:4222
-      - SMTP_HOST=smtp.ethereal.email
-      - SMTP_PORT=587
-      - SMTP_USER=mock_user
-      - SMTP_PASS=mock_pass
+      - NATS_URL=${NATS_URL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
     restart: unless-stopped
     depends_on:
       - nats
@@ -169,17 +162,17 @@ services:
       - emapex_net
 
   # ==========================================
-  # Infrastructure (Database, Cache, Message Broker)
+  # Infrastructure (Bound to localhost / 127.0.0.1)
   # ==========================================
   postgres:
     image: postgres:15-alpine
     container_name: emapex_postgres
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: emapex
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5440:5432"
+      - "127.0.0.1:5440:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
@@ -190,7 +183,7 @@ services:
     image: redis:7-alpine
     container_name: emapex_redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redisdata:/data
     restart: unless-stopped
@@ -201,21 +194,21 @@ services:
     image: nats:alpine
     container_name: emapex_nats
     ports:
-      - "4222:4222" # Client port
-      - "8222:8222" # HTTP management port
+      - "127.0.0.1:4222:4222" # Client port bound to localhost
+      - "127.0.0.1:8222:8222" # HTTP management port bound to localhost
     command: ["-m", "8222"]
     restart: unless-stopped
     networks:
       - emapex_net
 
   # ==========================================
-  # Observability Stack (Prometheus + Grafana)
+  # Observability Stack (Bound to localhost / 127.0.0.1)
   # ==========================================
   prometheus:
     image: prom/prometheus:latest
     container_name: emapex_prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     restart: unless-stopped
@@ -226,10 +219,10 @@ services:
     image: grafana/grafana:latest
     container_name: emapex_grafana
     ports:
-      - "3100:3000"
+      - "127.0.0.1:3100:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=emapex123
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     volumes:
       - grafanadata:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro

@@ -30,15 +30,6 @@ resource "aws_security_group" "swarm_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # NATS Message Broker (external access if needed, e.g. monitoring)
-  ingress {
-    description = "NATS core client port"
-    from_port   = 4222
-    to_port     = 4222
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   # Outbound Rules
   egress {
     from_port   = 0
