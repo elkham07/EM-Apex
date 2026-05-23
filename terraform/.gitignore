@@ -1,0 +1,15 @@
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+
+# Crash log files
+crash.log
+
+# Provider plugins
+.terraform/
+.terraform.lock.hcl
+
+# Secret variable files
+*.tfvars
+!example.tfvars
