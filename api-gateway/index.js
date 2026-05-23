@@ -11,9 +11,44 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(morgan('combined'));
 
+// Prometheus Observability Setup
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ register: client.register });
+
+// Custom Express request metrics
+const httpRequestDurationMicroseconds = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in microseconds',
+  labelNames: ['method', 'route', 'code'],
+  buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
+});
+
+// Middleware to capture request duration
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const duration = process.hrtime(start);
+    const durationInSeconds = duration[0] + duration[1] / 1e9;
+    
+    // We clean route names (e.g. remove query strings or dynamic UUIDs if applicable)
+    const route = req.baseUrl + (req.route ? req.route.path : req.path);
+    httpRequestDurationMicroseconds
+      .labels(req.method, route, res.statusCode)
+      .observe(durationInSeconds);
+  });
+  next();
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', service: 'api-gateway' });
+});
+
+// Metrics endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
 });
 
 // Proxies
