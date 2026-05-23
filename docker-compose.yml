@@ -148,6 +148,25 @@ services:
     networks:
       - emapex_net
 
+  notification-service:
+    build:
+      context: ./services/notification-service
+    container_name: emapex_notification_service
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NATS_URL=nats://nats:4222
+      - SMTP_HOST=smtp.ethereal.email
+      - SMTP_PORT=587
+      - SMTP_USER=mock_user
+      - SMTP_PASS=mock_pass
+    restart: unless-stopped
+    depends_on:
+      - nats
+    networks:
+      - emapex_net
+
   # ==========================================
   # Infrastructure (Database, Cache, Message Broker)
   # ==========================================
