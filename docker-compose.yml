@@ -84,6 +84,27 @@ services:
     networks:
       - emapex_net
 
+  submission-service:
+    build:
+      context: ./services/submission-service
+    container_name: emapex_submission_service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=emapex
+      - DB_USER=admin
+      - DB_PASSWORD=password
+      - NATS_URL=nats://nats:4222
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - nats
+    networks:
+      - emapex_net
+
   # ==========================================
   # Infrastructure (Database, Cache, Message Broker)
   # ==========================================
