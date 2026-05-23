@@ -105,6 +105,28 @@ services:
     networks:
       - emapex_net
 
+  payment-service:
+    build:
+      context: ./services/payment-service
+    container_name: emapex_payment_service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=emapex
+      - DB_USER=admin
+      - DB_PASSWORD=password
+      - NATS_URL=nats://nats:4222
+      - STRIPE_SECRET_KEY=sk_test_mock
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - nats
+    networks:
+      - emapex_net
+
   # ==========================================
   # Infrastructure (Database, Cache, Message Broker)
   # ==========================================
