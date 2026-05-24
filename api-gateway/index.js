@@ -1,8 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import 'dotenv/config';
+import client from 'prom-client';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,7 +13,6 @@ app.use(cors());
 app.use(morgan('combined'));
 
 // Prometheus Observability Setup
-const client = require('prom-client');
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics({ register: client.register });
 
