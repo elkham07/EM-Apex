@@ -18,7 +18,7 @@ import {
   INI_REVENUE_CHART_DATA,
 } from './data';
 import { Member, Submission, Task, Payment } from './types';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface NotificationItem {

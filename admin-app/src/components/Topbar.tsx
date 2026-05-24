@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Sun, Moon, Bell, Settings, LogOut, Check, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface NotificationItem {
   id: string;

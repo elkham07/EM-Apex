@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Submission } from '../types';
 import { Filter, Check, X, Search, FileText, DollarSign, Calendar, Eye } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubmissionsViewProps {
   submissions: Submission[];

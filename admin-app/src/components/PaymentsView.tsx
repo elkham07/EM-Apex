@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Payment } from '../types';
 import { Filter, DollarSign, Download, ArrowUpRight, ArrowDownLeft, Receipt, CheckCircle, AlertTriangle } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PaymentsViewProps {
   payments: Payment[];

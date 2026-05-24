@@ -1,5 +1,5 @@
 import { LayoutDashboard, Plus, Users, Send, CreditCard, ClipboardList } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface SidebarProps {
   activeTab: string;

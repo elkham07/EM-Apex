@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Task } from '../types';
 import { ClipboardList, PlusCircle, CheckCircle, Clock, RotateCcw, AlertOctagon, Check, Trash2, Tag, Calendar } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TasksViewProps {
   tasks: Task[];

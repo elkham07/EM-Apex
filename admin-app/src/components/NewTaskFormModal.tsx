@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Send, BookOpen, AlertCircle, FileSpreadsheet } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Submission } from '../types';
 
 interface NewTaskFormModalProps {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Member } from '../types';
 import { Search, UserPlus, Filter, Trash2, Mail, Briefcase, Calendar, Check, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface MembersViewProps {
   members: Member[];

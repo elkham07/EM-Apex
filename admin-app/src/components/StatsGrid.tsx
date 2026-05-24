@@ -1,5 +1,5 @@
 import { Users, ClipboardList, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface StatsGridProps {
   totalMembers: number;

@@ -1,6 +1,6 @@
 import { Submission } from '../types';
 import { Check, X, CheckSquare, AlertCircle, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PendingApprovalsPanelProps {
   submissions: Submission[];
