@@ -1,9 +1,14 @@
+import { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 import TaskCard from '../components/TaskCard'
-import RightPanel from '../components/RightPanel'
+import Calendar from '../components/Calendar'
+import AnnouncementChat from '../components/AnnouncementChat'
+import TaskModal from '../components/TaskModal'
 
-const Dashboard = () => {
+const Dashboard = ({ searchQuery, setSearchQuery }) => {
+  const [selectedTask, setSelectedTask] = useState(null)
+
   const tasks = [
     {
       id: 1,
@@ -61,30 +66,47 @@ const Dashboard = () => {
     }
   ]
 
+  const filteredTasks = tasks.filter(task => 
+    task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    task.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  )
+
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <Sidebar />
       <main className="main-content">
-        <Topbar />
+        <Topbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <div className="content-scroll">
           <section className="tasks-cards-section">
             <div className="tasks-cards-header">
               <div className="tasks-cards-title-wrap">
                 <h3>Available tasks</h3>
-                <span className="tasks-cards-count">8 new</span>
+                <span className="tasks-cards-count">{filteredTasks.filter(t => t.new).length} new</span>
               </div>
               <p className="tasks-cards-sub">Pick a task and start earning</p>
             </div>
 
             <div className="tasks-grid">
-              {tasks.map(task => (
-                <TaskCard key={task.id} task={task} />
+              {filteredTasks.map(task => (
+                <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
               ))}
+              {filteredTasks.length === 0 && (
+                <div style={{ padding: '20px', color: 'var(--text-3)' }}>No tasks found matching your search.</div>
+              )}
             </div>
           </section>
         </div>
       </main>
-      <RightPanel />
+      
+      {/* Right Panel with Calendar and Announcement Chat */}
+      <aside className="right-panel">
+        <Calendar />
+        <AnnouncementChat />
+      </aside>
+
+      {selectedTask && (
+        <TaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
+      )}
     </div>
   )
 }

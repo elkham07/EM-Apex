@@ -1,24 +1,23 @@
-const TaskCard = ({ task }) => {
+const TaskCard = ({ task, onClick }) => {
   return (
-    <div className="task-card">
+    <div className="task-card" onClick={onClick}>
       <div className="task-card-header">
         <span className="task-date">{task.posted}</span>
         {task.new && <span className="task-new-badge">New</span>}
       </div>
       <h4 className="task-title">{task.title}</h4>
       <div className="task-tags">
-        {task.tags.map((tag, index) => (
-          <span key={index} className="task-tag">{tag}</span>
+        {task.tags.map((tag, i) => (
+          <span key={i} className="task-tag">{tag}</span>
         ))}
       </div>
       <div className="task-card-footer">
         <div className="task-members">
-          {task.workers.slice(0, 3).map((worker, index) => (
-            <div key={index} className="task-avatar">{worker}</div>
+          {task.workers.map((w, i) => (
+            <div key={i} className={w.startsWith('+') ? 'task-avatar-more' : 'task-avatar'}>
+              {w}
+            </div>
           ))}
-          {task.workers.length > 3 && (
-            <span className="task-avatar-more">+{task.workers.length - 3}</span>
-          )}
         </div>
         <span className="task-reward">${task.reward}</span>
       </div>
