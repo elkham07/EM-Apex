@@ -45,20 +45,10 @@ export default function StatsGrid({
       color: 'from-orange-500/10 to-transparent text-orange-500 border-orange-500/10 dark:border-orange-500/20',
       textColor: 'text-orange-500 dark:text-orange-400',
     },
-    {
-      id: 'stat-revenue',
-      label: 'Monthly Revenue',
-      val: `$${monthlyRevenue.toLocaleString()}`,
-      change: '+$1,200',
-      isUp: true,
-      icon: DollarSign,
-      color: 'from-purple-500/10 to-transparent text-purple-500 border-purple-500/10 dark:border-purple-500/20',
-      textColor: 'text-purple-500 dark:text-purple-400',
-    },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {stats.map((item) => {
         const Icon = item.icon;
         return (

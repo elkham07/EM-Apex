@@ -74,7 +74,7 @@ export default function MembersView({
   return (
     <div className="space-y-6">
       {/* View Header with Search/Filter Tools */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#121315] p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
+      <div className="flex flex-col sm:flex-row items-center justify-start gap-4 bg-white dark:bg-[#121315] p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800">
         <div className="flex items-center gap-2">
           <Filter size={15} className="text-neutral-400" />
           <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mr-2">Filters</span>
@@ -94,14 +94,6 @@ export default function MembersView({
             ))}
           </div>
         </div>
-
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-indigo-500/10 active:scale-95 shrink-0"
-        >
-          <UserPlus size={14} />
-          <span>Add Member</span>
-        </button>
       </div>
 
       {/* Add New Member Slide Transition Panel */}
@@ -231,7 +223,7 @@ export default function MembersView({
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex items-center gap-3">
                     <div
-                      className={`h-11 w-11 rounded-xl border flex items-center justify-center font-bold text-sm select-none shrink-0 ${member.avatarBg}`}
+                      className={`h-11 w-11 rounded-full border flex items-center justify-center font-bold text-sm select-none shrink-0 ${member.avatarBg}`}
                     >
                       {member.avatar}
                     </div>
@@ -239,9 +231,8 @@ export default function MembersView({
                       <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                         {member.name}
                       </h4>
-                      <div className="flex items-center gap-1 mt-0.5 text-3xs text-neutral-400">
-                        <Briefcase size={10} />
-                        <span>{member.role}</span>
+                      <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                        {member.role}
                       </div>
                     </div>
                   </div>
@@ -257,40 +248,32 @@ export default function MembersView({
                 </div>
 
                 {/* Sub Metadata rows inside cards */}
-                <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800/60 divide-y divide-neutral-50 dark:divide-neutral-900/40 text-4xs font-mono font-medium tracking-wide">
-                  <div className="flex items-center justify-between py-1 text-neutral-500 dark:text-neutral-400">
-                    <span className="flex items-center gap-1 uppercase">
-                      <Mail size={10} className="text-neutral-400" /> EMAIL
-                    </span>
-                    <span className="text-[10px] text-neutral-700 dark:text-neutral-300 select-all tracking-normal">
+                <div className="mt-4 flex flex-col gap-1.5 text-[11px] font-mono font-medium tracking-wide">
+                  <div className="flex items-center gap-2">
+                    <span className="text-neutral-400 w-12">EMAIL:</span>
+                    <span className="text-neutral-700 dark:text-neutral-300 truncate">
                       {member.email}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between py-1 text-neutral-500 dark:text-neutral-400">
-                    <span className="flex items-center gap-1 uppercase">
-                      <Calendar size={10} className="text-neutral-400" /> JOINED
-                    </span>
-                    <span className="text-[10px] text-neutral-700 dark:text-neutral-300">
+                  <div className="flex items-center gap-2">
+                    <span className="text-neutral-400 w-12">JOINED:</span>
+                    <span className="text-neutral-700 dark:text-neutral-300">
                       {member.joinedDate}
                     </span>
                   </div>
                 </div>
 
-                {/* Footer counters and status controls */}
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="text-3xs text-neutral-500">
-                    Submissions:{' '}
-                    <span className="font-bold text-neutral-800 dark:text-neutral-100 ml-1 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded">
-                      {member.submissionsCount}
-                    </span>
+                {/* Footer counters and status controls safely padded */}
+                <div className="mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-800/60 flex items-center justify-between">
+                  <div className="text-[10px] text-neutral-500 font-medium">
+                    Submissions: <span className="font-bold text-neutral-800 dark:text-neutral-100">{member.submissionsCount}</span>
                   </div>
 
-                  {/* High contrast green active status indicator matching screenshot */}
                   <span
-                    className={`text-4xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${
+                    className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${
                       member.status === 'active'
-                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                        : 'bg-neutral-500/10 border-neutral-500/20 text-neutral-400'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                        : 'bg-neutral-500/10 text-neutral-400'
                     }`}
                   >
                     {member.status}

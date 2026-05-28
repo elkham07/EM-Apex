@@ -9,6 +9,7 @@ import SubmissionsView from './components/SubmissionsView';
 import PaymentsView from './components/PaymentsView';
 import TasksView from './components/TasksView';
 import NewTaskFormModal from './components/NewTaskFormModal';
+import MonitoringView from './components/MonitoringView';
 
 import {
   INITIAL_MEMBERS,
@@ -434,26 +435,13 @@ export default function App() {
                 transition={{ duration: 0.25 }}
                 className="max-w-7xl mx-auto"
               >
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Left listings column */}
-                  <div className="lg:col-span-3">
-                    <SubmissionsView
-                      submissions={submissions}
-                      onApprove={handleApproveSubmission}
-                      onDecline={handleDeclineSubmission}
-                      searchQuery={searchQuery}
-                    />
-                  </div>
-
-                  {/* Right boards column */}
-                  <div className="space-y-6">
-                    <TasksView
-                      tasks={tasks}
-                      onAddTask={handleAddTask}
-                      onUpdateTaskStatus={handleUpdateTaskStatus}
-                      onDeleteTask={handleDeleteTask}
-                    />
-                  </div>
+                <div className="w-full">
+                  <SubmissionsView
+                    submissions={submissions}
+                    onApprove={handleApproveSubmission}
+                    onDecline={handleDeclineSubmission}
+                    searchQuery={searchQuery}
+                  />
                 </div>
               </motion.div>
             )}
@@ -470,6 +458,19 @@ export default function App() {
                 <PaymentsView payments={payments} searchQuery={searchQuery} />
               </motion.div>
             )}
+
+            {activeTab === 'monitoring' && (
+              <motion.div
+                key="monitoring"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+                className="max-w-7xl mx-auto"
+              >
+                <MonitoringView />
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
@@ -481,12 +482,10 @@ export default function App() {
         onDecline={handleDeclineSubmission}
       />
 
-      {/* Upload Resource Overlay form popups */}
       <NewTaskFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateSubmission}
-        members={members.map((m) => ({ name: m.name, avatar: m.avatar, avatarBg: m.avatarBg }))}
+        onSubmit={handleAddTask}
       />
 
       {/* Floating Success Alert Banner Toast notifications */}

@@ -29,6 +29,7 @@ export default function Topbar({
   onClearNotifications,
 }: TopbarProps) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -143,13 +144,51 @@ export default function Topbar({
           </AnimatePresence>
         </div>
 
-        {/* Global Action Tools icon */}
-        <button className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 transition-all cursor-pointer">
-          <Settings size={18} />
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 transition-all cursor-pointer"
+          >
+            <Settings size={18} />
+          </button>
+          
+          <AnimatePresence>
+            {showSettings && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowSettings(false)} />
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#121315] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl z-40 overflow-hidden p-4"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">A</div>
+                    <div>
+                      <div className="text-sm font-bold text-neutral-900 dark:text-white">Admin User</div>
+                      <div className="text-xs text-neutral-500">admin@emapex.com</div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      localStorage.removeItem('token');
+                      window.location.href = '/login';
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl transition-all text-xs font-bold uppercase tracking-wider"
+                  >
+                    <LogOut size={14} /> Log Out
+                  </button>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Avatar badge matching screenshot */}
-        <div className="h-10 w-10 rounded-full border border-neutral-200 dark:border-neutral-800 flex items-center justify-center bg-indigo-600 text-white font-semibold text-sm select-none shadow-md shadow-indigo-600/10 shrink-0">
+        <div 
+          onClick={() => setShowSettings(!showSettings)}
+          className="h-10 w-10 rounded-full border border-neutral-200 dark:border-neutral-800 flex items-center justify-center bg-indigo-600 text-white font-semibold text-sm select-none shadow-md shadow-indigo-600/10 shrink-0 cursor-pointer"
+        >
           A
         </div>
       </div>

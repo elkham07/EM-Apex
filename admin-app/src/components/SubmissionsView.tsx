@@ -229,10 +229,11 @@ export default function SubmissionsView({
                     </span>
                   </div>
                   <div className="p-3 border border-neutral-100 dark:border-neutral-800 rounded-xl">
-                    <span className="text-neutral-400 block">Payout revenue</span>
-                    <span className="text-xs font-sans font-bold text-emerald-500 mt-1 block tracking-tight">
-                      ${selectedSub.revenue}
-                    </span>
+                    <span className="text-neutral-400 block">Attached Asset</span>
+                    <button className="text-[10px] font-sans font-bold text-indigo-500 hover:text-indigo-600 mt-1 flex items-center gap-1 cursor-pointer">
+                      <FileText size={12} />
+                      Download PDF workflow
+                    </button>
                   </div>
                 </div>
 

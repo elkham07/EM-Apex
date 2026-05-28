@@ -1,54 +1,45 @@
 import React, { useState } from 'react';
 import { X, Send, BookOpen, AlertCircle, FileSpreadsheet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Submission } from '../types';
+import { Task } from '../types';
 
 interface NewTaskFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (submission: Omit<Submission, 'id' | 'status' | 'submittedAt'>) => void;
-  members: Array<{ name: string; avatar: string; avatarBg: string }>;
+  onSubmit: (task: Omit<Task, 'id'>) => void;
 }
 
 export default function NewTaskFormModal({
   isOpen,
   onClose,
   onSubmit,
-  members,
 }: NewTaskFormModalProps) {
   const [title, setTitle] = useState('');
-  const [memberName, setMemberName] = useState('');
-  const [type, setType] = useState('UI Kit Template');
   const [revenue, setRevenue] = useState(250);
   const [description, setDescription] = useState('');
+  const [fileName, setFileName] = useState('');
 
-  // Auto pick corresponding avatar bg
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !memberName) return;
-
-    const matchedMember = members.find((m) => m.name === memberName);
-    const memberAvatar = matchedMember ? matchedMember.avatar : '??';
-    const avatarBg = matchedMember
-      ? matchedMember.avatarBg
-      : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30';
+    if (!title) return;
 
     onSubmit({
       title,
-      memberName,
-      memberAvatar,
-      avatarBg,
-      type,
-      revenue,
       description,
+      category: 'General',
+      assignedTo: 'Unassigned',
+      status: 'todo',
+      priority: 'medium',
+      dueDate: new Date().toISOString().split('T')[0],
+      reward: revenue,
+      file: fileName
     });
 
     // Reset fields
     setTitle('');
-    setMemberName('');
-    setType('UI Kit Template');
     setRevenue(250);
     setDescription('');
+    setFileName('');
     onClose();
   };
 
@@ -78,10 +69,10 @@ export default function NewTaskFormModal({
               <div className="flex justify-between items-start gap-4 mb-6">
                 <div>
                   <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 uppercase tracking-widest flex items-center gap-1.5">
-                    <Send size={14} className="text-indigo-500" /> Submit New Asset Resource
+                    <Send size={14} className="text-indigo-500" /> CREATE NEW WORKER TASK
                   </h3>
                   <p className="text-2xs text-neutral-400 dark:text-neutral-500 mt-1">
-                    Enter submission parameters to append resource directly to the verification pipeline.
+                    Enter details to publish a new task to the worker dashboard.
                   </p>
                 </div>
                 <button
@@ -96,7 +87,7 @@ export default function NewTaskFormModal({
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div className="space-y-1">
                   <span className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
-                    Product Title
+                    TASK TITLE
                   </span>
                   <input
                     type="text"
@@ -108,48 +99,12 @@ export default function NewTaskFormModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <span className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
-                      Creator Contributor
-                    </span>
-                    <select
-                      required
-                      value={memberName}
-                      onChange={(e) => setMemberName(e.target.value)}
-                      className="w-full text-xs p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-                    >
-                      <option value="">Select a contributor...</option>
-                      {members.map((member, i) => (
-                        <option key={i} value={member.name}>
-                          {member.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
 
-                  <div className="space-y-1">
-                    <span className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
-                      Asset Type Category
-                    </span>
-                    <select
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                      className="w-full text-xs p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-                    >
-                      <option value="UI Kit Template">UI Kit Template</option>
-                      <option value="Social Media Guide">Social Media Guide</option>
-                      <option value="Notion Template Pack">Notion Template Pack</option>
-                      <option value="Figma File Bundle">Figma File Bundle</option>
-                      <option value="HTML Landing Page">HTML Landing Page</option>
-                    </select>
-                  </div>
-                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <span className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
-                      Payout Payout Value ($)
+                      REWARD VALUE ($)
                     </span>
                     <input
                       type="number"
@@ -161,17 +116,35 @@ export default function NewTaskFormModal({
                     />
                   </div>
 
-                  <div className="p-3 bg-indigo-500/5 rounded-xl border border-indigo-500/10 flex items-start gap-2 h-[4.5rem] overflow-hidden">
-                    <AlertCircle size={14} className="text-indigo-500 shrink-0 mt-0.5" />
-                    <p className="text-[10px] text-neutral-500 dark:text-neutral-400 leading-normal">
-                      Submission starts as <span className="font-bold text-amber-500 dark:text-amber-400">PENDING</span>. Approving will transfer the payout into Monthly Revenue.
-                    </p>
+                  <div className="space-y-1">
+                    <span className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
+                      Upload Task Plan / PDF Brief
+                    </span>
+                    {!fileName ? (
+                      <label className="flex flex-col items-center justify-center w-full h-[4.5rem] border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl cursor-pointer bg-neutral-50 dark:bg-neutral-900/40 hover:bg-neutral-100 dark:hover:bg-neutral-800/60 transition-colors">
+                        <div className="flex flex-col items-center justify-center">
+                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400"><span className="font-semibold text-indigo-500">Click to upload</span> or drag and drop</p>
+                          <p className="text-[9px] text-neutral-400 dark:text-neutral-500 mt-0.5">PDF (MAX. 10MB)</p>
+                        </div>
+                        <input type="file" className="hidden" accept=".pdf" onChange={(e) => e.target.files && setFileName(e.target.files[0].name)} />
+                      </label>
+                    ) : (
+                      <div className="flex items-center justify-between w-full h-[4.5rem] px-4 border border-neutral-200 dark:border-neutral-800 rounded-xl bg-neutral-50 dark:bg-neutral-900/40">
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <FileSpreadsheet size={16} className="text-indigo-500 shrink-0" />
+                          <span className="text-xs text-neutral-700 dark:text-neutral-300 truncate">{fileName}</span>
+                        </div>
+                        <button type="button" onClick={() => setFileName('')} className="p-1 hover:bg-rose-500/10 text-rose-500 rounded transition-colors shrink-0">
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="space-y-1">
                   <span className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
-                    Product Description Summary
+                    TASK GUIDELINES & DESCRIPTION
                   </span>
                   <textarea
                     value={description}
@@ -195,7 +168,7 @@ export default function NewTaskFormModal({
                     className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-semibold cursor-pointer active:scale-98 shadow-md shadow-indigo-500/10 flex items-center gap-1.5"
                   >
                     <Send size={12} />
-                    <span>Upload Resource</span>
+                    <span>Publish Task</span>
                   </button>
                 </div>
               </form>

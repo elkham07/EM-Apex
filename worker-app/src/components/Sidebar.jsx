@@ -42,7 +42,17 @@ const Sidebar = () => {
         </NavLink>
       </nav>
 
-      <div className="sidebar-footer">
+      <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="avatar" style={{ width: '36px', height: '36px', background: '#333' }}>J</div>
+          <div>
+            <div style={{ fontWeight: '600', fontSize: '13px', color: '#fff' }}>worker@emapex.com</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 8px var(--green)' }}></div>
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--green)', letterSpacing: '0.5px' }}>CONNECTED</span>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
   )

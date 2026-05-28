@@ -1,4 +1,4 @@
-import { LayoutDashboard, Plus, Users, Send, CreditCard, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, Plus, Users, Send, CreditCard, ClipboardList, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface SidebarProps {
@@ -14,6 +14,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal }:
     { id: 'members', name: 'Members', icon: Users },
     { id: 'submissions', name: 'Submissions', icon: Send },
     { id: 'payments', name: 'Payments', icon: CreditCard },
+    { id: 'monitoring', name: 'Monitoring', icon: Activity },
   ];
 
   return (

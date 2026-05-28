@@ -32,6 +32,8 @@ export interface Task {
   status: 'todo' | 'in-progress' | 'completed';
   priority: 'low' | 'medium' | 'high';
   dueDate: string;
+  reward?: number;
+  file?: string;
 }
 
 export interface Payment {

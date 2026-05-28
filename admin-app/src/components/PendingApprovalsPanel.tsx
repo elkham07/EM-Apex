@@ -1,6 +1,7 @@
 import { Submission } from '../types';
 import { Check, X, CheckSquare, AlertCircle, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import AdminChat from './AdminChat';
 
 interface PendingApprovalsPanelProps {
   submissions: Submission[];
@@ -97,20 +98,8 @@ export default function PendingApprovalsPanel({
         </div>
       </div>
 
-      {/* Static Info Banner at Right panel bottom */}
-      <div className="p-3 bg-indigo-500/5 border border-indigo-500/10 dark:border-indigo-400/10 rounded-xl">
-        <div className="flex gap-2 items-start">
-          <AlertCircle size={14} className="text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0" />
-          <div>
-            <span className="text-4xs uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-400 block mb-0.5">
-              Platform Note
-            </span>
-            <p className="text-4xs text-neutral-500 dark:text-neutral-400 leading-normal">
-              Approving submissions will automatically calculate and update Monthly Revenue, register transaction payouts, and dispatch status triggers.
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Dynamic Announcement Chat */}
+      <AdminChat />
     </div>
   );
 }
