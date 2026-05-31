@@ -64,3 +64,32 @@ exports.reviewSubmission = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// Admin only: Get all submissions
+exports.getAllSubmissions = async (req, res) => {
+  try {
+    const submissions = await Submission.findAll({
+      order: [['createdAt', 'DESC']]
+    });
+    res.status(200).json(submissions);
+  } catch (error) {
+    console.error('GetAllSubmissions error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Worker or Admin: Get submissions by workerId
+exports.getWorkerSubmissions = async (req, res) => {
+  try {
+    const { workerId } = req.params;
+    const submissions = await Submission.findAll({
+      where: { workerId },
+      order: [['createdAt', 'DESC']]
+    });
+    res.status(200).json(submissions);
+  } catch (error) {
+    console.error('GetWorkerSubmissions error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

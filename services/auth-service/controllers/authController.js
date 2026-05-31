@@ -220,3 +220,89 @@ exports.getUserById = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// Admin only: Get all users/members
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'email', 'role', 'createdAt']
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('GetAllUsers error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Admin only: Delete user/member
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Prevent self-deletion if they try
+    if (req.user && req.user.id === id) {
+      return res.status(400).json({ message: 'Cannot delete your own account' });
+    }
+
+    await user.destroy();
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('DeleteUser error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Admin only: Invite/Create a new user with any role
+exports.inviteUser = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+
+    if (!email || !password || !role) {
+      return res.status(400).json({ message: 'Email, password and role are required' });
+    }
+
+    // Check if user exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      role
+    });
+
+    try {
+      const nats = getNats();
+      nats.publish('user.registered', sc.encode(JSON.stringify({
+        userId: newUser.id,
+        email: newUser.email,
+        role: newUser.role
+      })));
+    } catch (natsErr) {
+      console.error('Failed to publish NATS event', natsErr);
+    }
+
+    // Increment Prometheus counter
+    userRegistrationsCounter.inc({ role: newUser.role });
+
+    res.status(201).json({
+      message: 'User invited and registered successfully',
+      user: { id: newUser.id, email: newUser.email, role: newUser.role }
+    });
+  } catch (error) {
+    console.error('InviteUser error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

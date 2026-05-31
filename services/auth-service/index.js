@@ -31,6 +31,24 @@ const { connectNats } = require('./config/nats');
 sequelize.sync().then(async () => {
   console.log('Database connected and models synced');
   
+  // Seed default admin user
+  try {
+    const adminEmail = 'admin@emapex.com';
+    const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+    if (!existingAdmin) {
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('adminpassword', 10);
+      await User.create({
+        email: adminEmail,
+        password: hashedPassword,
+        role: 'admin'
+      });
+      console.log('Default admin user seeded successfully.');
+    }
+  } catch (seedErr) {
+    console.error('Failed to seed default admin user:', seedErr);
+  }
+  
   await connectNats();
   
   app.listen(PORT, () => {

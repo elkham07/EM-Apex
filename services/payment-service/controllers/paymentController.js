@@ -51,3 +51,17 @@ exports.getWorkerPayments = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// Admin only: Get all payments/transfers
+exports.getAllPayments = async (req, res) => {
+  try {
+    const payments = await Payment.findAll({
+      order: [['createdAt', 'DESC']]
+    });
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error('GetAllPayments error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

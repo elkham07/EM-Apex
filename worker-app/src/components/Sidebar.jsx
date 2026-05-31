@@ -1,6 +1,17 @@
-import { NavLink } from 'react-router-dom'
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const workerEmail = localStorage.getItem('em_worker_email') || 'worker@emapex.com';
+
+  const handleLogout = () => {
+    localStorage.removeItem('em_worker_token');
+    localStorage.removeItem('em_worker_id');
+    localStorage.removeItem('em_worker_email');
+    navigate('/login');
+  };
+
   return (
     <aside className="sidebar" id="sidebar">
       <div className="sidebar-logo">
@@ -28,8 +39,6 @@ const Sidebar = () => {
         </NavLink>
       </nav>
 
-      {/* ADMIN section is completely removed/hidden for the worker view */}
-
       <nav className="nav-section">
         <p className="nav-label">OTHER</p>
         <NavLink to="/learn-more" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
@@ -42,20 +51,47 @@ const Sidebar = () => {
         </NavLink>
       </nav>
 
-      <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div className="avatar" style={{ width: '36px', height: '36px', background: '#333' }}>J</div>
-          <div>
-            <div style={{ fontWeight: '600', fontSize: '13px', color: '#fff' }}>worker@emapex.com</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 8px var(--green)' }}></div>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--green)', letterSpacing: '0.5px' }}>CONNECTED</span>
+      <div className="sidebar-footer">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="avatar" style={{ width: '32px', height: '32px', background: 'linear-gradient(135deg, var(--accent), #a78bfa)', color: '#fff', fontSize: '12px', fontWeight: 'bold' }}>
+              {workerEmail.substring(0, 1).toUpperCase()}
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontWeight: '600', fontSize: '12px', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{workerEmail}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 6px var(--green)' }}></div>
+                <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--green)', letterSpacing: '0.5px' }}>CONNECTED</span>
+              </div>
             </div>
           </div>
+          <button 
+            onClick={handleLogout} 
+            style={{ 
+              width: '100%', 
+              background: 'rgba(255,92,92,0.1)', 
+              color: '#ff5c5c', 
+              padding: '6px 10px', 
+              borderRadius: '6px', 
+              fontSize: '11px', 
+              fontWeight: '600',
+              textAlign: 'center',
+              border: '1px solid rgba(255,92,92,0.15)',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255,92,92,0.2)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255,92,92,0.1)';
+            }}
+          >
+            Log Out
+          </button>
         </div>
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;

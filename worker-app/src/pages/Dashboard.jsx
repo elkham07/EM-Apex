@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 import TaskCard from '../components/TaskCard'
@@ -6,65 +6,59 @@ import Calendar from '../components/Calendar'
 import AnnouncementChat from '../components/AnnouncementChat'
 import TaskModal from '../components/TaskModal'
 
+import { useNavigate } from 'react-router-dom'
+
 const Dashboard = ({ searchQuery, setSearchQuery }) => {
   const [selectedTask, setSelectedTask] = useState(null)
+  const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
-  const tasks = [
-    {
-      id: 1,
-      title: 'UI Kit Template',
-      posted: 'Posted Today',
-      new: true,
-      reward: 25,
-      workers: ['A', 'M', 'K', '+2'],
-      tags: ['Design', 'Template', '3 days']
-    },
-    {
-      id: 2,
-      title: 'Social Media Guide',
-      posted: 'Posted 2 days ago',
-      new: false,
-      reward: 15,
-      workers: ['L', 'S'],
-      tags: ['Guide', '5 days']
-    },
-    {
-      id: 3,
-      title: 'Notion Template Pack',
-      posted: 'Posted 3 days ago',
-      new: true,
-      reward: 35,
-      workers: ['J', 'R', 'T'],
-      tags: ['Template', 'Productivity', '7 days']
-    },
-    {
-      id: 4,
-      title: 'Icon Set Design',
-      posted: 'Posted 5 days ago',
-      new: false,
-      reward: 20,
-      workers: ['D'],
-      tags: ['Design', '4 days']
-    },
-    {
-      id: 5,
-      title: 'Mini Course: Figma Basics',
-      posted: 'Posted 1 week ago',
-      new: false,
-      reward: 50,
-      workers: ['P', 'N'],
-      tags: ['Course', 'Video', '10 days']
-    },
-    {
-      id: 6,
-      title: 'Landing Page Copy',
-      posted: 'Posted 1 week ago',
-      new: true,
-      reward: 12,
-      workers: ['E', 'V'],
-      tags: ['Copywriting', '3 days']
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem('em_worker_token')
+        if (!token) {
+          navigate('/login')
+          return
+        }
+
+        const response = await fetch('http://localhost:3000/api/tasks', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        if (!response.ok) {
+          if (response.status === 401) {
+            navigate('/login')
+            return
+          }
+          throw new Error('Failed to load tasks')
+        }
+        const data = await response.json()
+        
+        // Map backend tasks to frontend expectations
+        const mapped = data.map((t, idx) => ({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          posted: new Date(t.createdAt).toLocaleDateString(),
+          new: idx < 3,
+          reward: parseFloat(t.reward),
+          workers: ['A', 'M', '+2'],
+          tags: ['Development', 'Task']
+        }))
+        setTasks(mapped)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchTasks()
+  }, [navigate])
 
   const filteredTasks = tasks.filter(task => 
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -86,14 +80,20 @@ const Dashboard = ({ searchQuery, setSearchQuery }) => {
               <p className="tasks-cards-sub">Pick a task and start earning</p>
             </div>
 
-            <div className="tasks-grid">
-              {filteredTasks.map(task => (
-                <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
-              ))}
-              {filteredTasks.length === 0 && (
-                <div style={{ padding: '20px', color: 'var(--text-3)' }}>No tasks found matching your search.</div>
-              )}
-            </div>
+            {loading ? (
+              <div style={{ padding: '20px', color: 'var(--text-2)' }}>Loading tasks from server...</div>
+            ) : error ? (
+              <div style={{ padding: '20px', color: 'var(--danger)' }}>Error: {error}</div>
+            ) : (
+              <div className="tasks-grid">
+                {filteredTasks.map(task => (
+                  <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
+                ))}
+                {filteredTasks.length === 0 && (
+                  <div style={{ padding: '20px', color: 'var(--text-3)' }}>No tasks found matching your search.</div>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </main>

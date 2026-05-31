@@ -23,6 +23,7 @@ export default function TasksView({
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [assignedTo, setAssignedTo] = useState('Alex Johnson');
   const [dueDate, setDueDate] = useState('2026-06-01');
+  const [reward, setReward] = useState('25.00');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +37,7 @@ export default function TasksView({
       status: 'todo',
       assignedTo,
       dueDate,
+      reward: parseFloat(reward)
     });
 
     // Reset Form fields
@@ -45,6 +47,7 @@ export default function TasksView({
     setPriority('medium');
     setAssignedTo('Alex Johnson');
     setDueDate('2026-06-01');
+    setReward('25.00');
     setShowForm(false);
   };
 
@@ -147,6 +150,22 @@ export default function TasksView({
                     value={assignedTo}
                     onChange={(e) => setAssignedTo(e.target.value)}
                     placeholder="Contributor's Name"
+                    className="w-full text-xs p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-3xs font-bold text-neutral-400 uppercase tracking-wider block">
+                    Task Reward ($ USD)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    step="0.01"
+                    value={reward}
+                    onChange={(e) => setReward(e.target.value)}
+                    placeholder="e.g. 25.00"
                     className="w-full text-xs p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>

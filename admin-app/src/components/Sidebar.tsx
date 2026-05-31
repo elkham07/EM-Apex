@@ -5,9 +5,11 @@ interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onOpenNewTaskModal: () => void;
+  adminEmail: string;
+  onLogout: () => void;
 }
 
-export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, adminEmail, onLogout }: SidebarProps) {
   const menuItems = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'new-task', name: 'New Task', icon: Plus },
@@ -85,21 +87,29 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal }:
       </div>
 
       {/* Sidebar Footer Identity & Status */}
-      <div className="p-4 border-t border-neutral-200 dark:border-neutral-800/80 bg-neutral-100/50 dark:bg-neutral-900/40 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-bold text-sm text-neutral-700 dark:text-neutral-300">
-          U
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">
-            elkhammamedov@gmail.com
-          </p>
-          <span className="flex items-center gap-1 mt-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-4xs font-mono font-bold tracking-widest text-emerald-500 dark:text-emerald-400 uppercase">
-              Connected
+      <div className="p-4 border-t border-neutral-200 dark:border-neutral-800/80 bg-neutral-100/50 dark:bg-neutral-900/40 flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs text-white uppercase">
+            {adminEmail.substring(0, 1)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 truncate">
+              {adminEmail}
+            </p>
+            <span className="flex items-center gap-1 mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-4xs font-mono font-bold tracking-widest text-emerald-500 dark:text-emerald-400 uppercase">
+                Connected
+              </span>
             </span>
-          </span>
+          </div>
         </div>
+        <button 
+          onClick={onLogout}
+          className="w-full py-1.5 text-3xs font-bold text-rose-500 hover:text-rose-400 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 hover:border-rose-500/20 rounded-lg transition-all cursor-pointer uppercase tracking-wider"
+        >
+          Sign Out
+        </button>
       </div>
     </div>
   );

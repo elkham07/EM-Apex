@@ -20,7 +20,7 @@ export default function MembersView({
   const [showAddForm, setShowAddForm] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('Product Designer');
+  const [role, setRole] = useState('worker');
   const [status, setStatus] = useState<'active' | 'inactive'>('active');
 
   // Filter members by query and state
@@ -66,7 +66,7 @@ export default function MembersView({
     // Reset Form state
     setName('');
     setEmail('');
-    setRole('Product Designer');
+    setRole('worker');
     setStatus('active');
     setShowAddForm(false);
   };
@@ -157,11 +157,8 @@ export default function MembersView({
                     onChange={(e) => setRole(e.target.value)}
                     className="w-full text-xs p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
                   >
-                    <option value="Product Designer">Product Designer</option>
-                    <option value="UI Developer">UI Developer</option>
-                    <option value="Template Architect">Template Architect</option>
-                    <option value="No-Code Expert">No-Code Expert</option>
-                    <option value="Content Creator">Content Creator</option>
+                    <option value="worker">Worker / Contributor</option>
+                    <option value="admin">Administrator</option>
                   </select>
                 </div>
 

@@ -10,6 +10,7 @@ import PaymentsView from './components/PaymentsView';
 import TasksView from './components/TasksView';
 import NewTaskFormModal from './components/NewTaskFormModal';
 import MonitoringView from './components/MonitoringView';
+import Login from './components/Login';
 
 import {
   INITIAL_MEMBERS,
@@ -30,31 +31,19 @@ interface NotificationItem {
 }
 
 export default function App() {
-  // State initialization from localStorage or falling back to initial mock datasets
-  const [members, setMembers] = useState<Member[]>(() => {
-    const saved = localStorage.getItem('em_members');
-    return saved ? JSON.parse(saved) : INITIAL_MEMBERS;
-  });
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('em_admin_token'));
+  const [adminEmail, setAdminEmail] = useState<string | null>(() => localStorage.getItem('em_admin_email'));
 
-  const [submissions, setSubmissions] = useState<Submission[]>(() => {
-    const saved = localStorage.getItem('em_submissions');
-    return saved ? JSON.parse(saved) : INITIAL_SUBMISSIONS;
-  });
+  const [members, setMembers] = useState<Member[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [revenueChartData, setRevenueChartData] = useState<any[]>(INI_REVENUE_CHART_DATA);
 
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('em_tasks');
-    return saved ? JSON.parse(saved) : INITIAL_TASKS;
-  });
-
-  const [payments, setPayments] = useState<Payment[]>(() => {
-    const saved = localStorage.getItem('em_payments');
-    return saved ? JSON.parse(saved) : INITIAL_PAYMENTS;
-  });
-
-  const [revenueChartData, setRevenueChartData] = useState(() => {
-    const saved = localStorage.getItem('em_rev_chart');
-    return saved ? JSON.parse(saved) : INI_REVENUE_CHART_DATA;
-  });
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
+  const [dbTasks, setDbTasks] = useState<any[]>([]);
+  const [dbSubmissions, setDbSubmissions] = useState<any[]>([]);
+  const [dbPayments, setDbPayments] = useState<any[]>([]);
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('em_dark_mode');
@@ -68,44 +57,158 @@ export default function App() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
   // Dynamic notifications state
-  const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
-    const saved = localStorage.getItem('em_notifications');
-    return saved
-      ? JSON.parse(saved)
-      : [
-          {
-            id: 'n-1',
-            text: 'System checking active template submission pools...',
-            time: '08:00 AM',
-            read: false,
-          },
-        ];
-  });
+  const [notifications, setNotifications] = useState<NotificationItem[]>([
+    {
+      id: 'n-1',
+      text: 'System checking active template submission pools...',
+      time: '08:00 AM',
+      read: false,
+    },
+  ]);
+
+  const loadAllData = async () => {
+    if (!token) return;
+    try {
+      const headers = { 'Authorization': `Bearer ${token}` };
+      
+      const [usersRes, tasksRes, subsRes, paysRes] = await Promise.all([
+        fetch('http://localhost:3000/api/auth/users', { headers }),
+        fetch('http://localhost:3000/api/tasks', { headers }),
+        fetch('http://localhost:3000/api/submissions', { headers }),
+        fetch('http://localhost:3000/api/payments', { headers })
+      ]);
+
+      if (usersRes.status === 401 || tasksRes.status === 401) {
+        handleLogout();
+        return;
+      }
+
+      const usersData = usersRes.ok ? await usersRes.json() : [];
+      const tasksData = tasksRes.ok ? await tasksRes.json() : [];
+      const subsData = subsRes.ok ? await subsRes.json() : [];
+      const paysData = paysRes.ok ? await paysRes.json() : [];
+
+      setDbUsers(usersData);
+      setDbTasks(tasksData);
+      setDbSubmissions(subsData);
+      setDbPayments(paysData);
+    } catch (err) {
+      console.error('Error fetching admin data:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      loadAllData();
+    }
+  }, [token]);
 
   // Keep state persistent in localStorage across refreshes
   useEffect(() => {
-    localStorage.setItem('em_members', JSON.stringify(members));
-  }, [members]);
+    // Map tasks
+    const mappedTasks: Task[] = dbTasks.map(t => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      category: 'Development',
+      assignedTo: 'Unassigned',
+      status: t.status === 'active' ? 'todo' : 'completed',
+      priority: 'medium',
+      dueDate: new Date(t.createdAt).toLocaleDateString(),
+      reward: parseFloat(t.reward)
+    }));
+    setTasks(mappedTasks);
 
-  useEffect(() => {
-    localStorage.setItem('em_submissions', JSON.stringify(submissions));
-  }, [submissions]);
+    // Create user map
+    const userMap: Record<string, any> = {};
+    dbUsers.forEach(u => {
+      userMap[u.id] = u;
+    });
 
-  useEffect(() => {
-    localStorage.setItem('em_tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    // Create task map
+    const taskMap: Record<string, any> = {};
+    dbTasks.forEach(t => {
+      taskMap[t.id] = t;
+    });
 
-  useEffect(() => {
-    localStorage.setItem('em_payments', JSON.stringify(payments));
-  }, [payments]);
+    // Map submissions
+    const mappedSubs: Submission[] = dbSubmissions.map(s => {
+      const user = userMap[s.workerId] || { email: 'unknown@worker.com' };
+      const task = taskMap[s.taskId] || { title: 'Unknown Task', reward: 0.00 };
+      return {
+        id: s.id,
+        memberName: user.email.split('@')[0],
+        memberAvatar: user.email.substring(0, 1).toUpperCase(),
+        avatarBg: 'bg-indigo-500',
+        title: task.title,
+        type: task.title,
+        status: s.status === 'pending' ? 'pending' : (s.status === 'approved' ? 'approved' : 'declined'),
+        submittedAt: new Date(s.createdAt).toLocaleDateString(),
+        revenue: parseFloat(task.reward),
+        description: s.fileUrl
+      };
+    });
+    setSubmissions(mappedSubs);
 
-  useEffect(() => {
-    localStorage.setItem('em_rev_chart', JSON.stringify(revenueChartData));
-  }, [revenueChartData]);
+    // Map members
+    const mappedMembers: Member[] = dbUsers.map(u => {
+      const userSubs = dbSubmissions.filter(s => s.workerId === u.id);
+      return {
+        id: u.id,
+        name: u.email.split('@')[0],
+        email: u.email,
+        avatar: u.email.substring(0, 1).toUpperCase(),
+        avatarBg: u.role === 'admin' ? 'bg-rose-500' : 'bg-indigo-500',
+        role: u.role,
+        status: 'active',
+        joinedDate: new Date(u.createdAt).toLocaleDateString(),
+        submissionsCount: userSubs.length
+      };
+    });
+    setMembers(mappedMembers);
 
-  useEffect(() => {
-    localStorage.setItem('em_notifications', JSON.stringify(notifications));
-  }, [notifications]);
+    // Create submission map
+    const submissionMap: Record<string, any> = {};
+    dbSubmissions.forEach(s => {
+      submissionMap[s.id] = s;
+    });
+
+    // Map payments
+    const mappedPayments: Payment[] = dbPayments.map(p => {
+      const user = userMap[p.workerId] || { email: 'unknown@worker.com' };
+      const sub = submissionMap[p.submissionId] || {};
+      const task = taskMap[sub.taskId] || { title: 'Platform Task Payout' };
+      return {
+        id: p.id,
+        memberName: user.email.split('@')[0],
+        amount: parseFloat(p.amount),
+        status: p.status === 'completed' ? 'success' : (p.status === 'pending' ? 'pending' : 'failed'),
+        date: new Date(p.createdAt).toLocaleDateString(),
+        item: task.title
+      };
+    });
+    setPayments(mappedPayments);
+
+    // Calculate revenue chart data dynamically
+    if (dbPayments.length > 0) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthlyRevenueMap: Record<string, number> = {};
+      dbPayments.forEach(p => {
+        if (p.status === 'completed') {
+          const date = new Date(p.createdAt);
+          const monthLabel = `${months[date.getMonth()]} ${date.getFullYear().toString().substring(2)}`;
+          monthlyRevenueMap[monthLabel] = (monthlyRevenueMap[monthLabel] || 0) + parseFloat(p.amount);
+        }
+      });
+      const chartData = Object.keys(monthlyRevenueMap).map(k => ({
+        name: k,
+        revenue: monthlyRevenueMap[k]
+      }));
+      if (chartData.length > 0) {
+        setRevenueChartData(chartData);
+      }
+    }
+  }, [dbUsers, dbTasks, dbSubmissions, dbPayments]);
 
   useEffect(() => {
     localStorage.setItem('em_dark_mode', JSON.stringify(darkMode));
@@ -155,125 +258,153 @@ export default function App() {
 
   // ACTIONS HANDLERS
   // 1. Approve Submission
-  const handleApproveSubmission = (id: string) => {
-    const target = submissions.find((sub) => sub.id === id);
-    if (!target) return;
-
-    // Update Submission Status
-    setSubmissions((prev) =>
-      prev.map((sub) => (sub.id === id ? { ...sub, status: 'approved' } : sub))
-    );
-
-    // Register a payout payment automatically
-    const newPayment: Payment = {
-      id: `pay-${Date.now()}`,
-      memberName: target.memberName,
-      amount: target.revenue,
-      status: 'success',
-      date: new Date().toISOString().split('T')[0],
-      item: target.title,
-    };
-    setPayments((prev) => [newPayment, ...prev]);
-
-    // Append to charts data logic: increase latest revenue marker dynamically!
-    setRevenueChartData((prev) => {
-      const copy = [...prev];
-      if (copy.length > 0) {
-        copy[copy.length - 1].revenue += target.revenue;
-      }
-      return copy;
-    });
-
-    // Update member's submissions count
-    setMembers((prev) =>
-      prev.map((m) =>
-        m.name === target.memberName
-          ? { ...m, submissionsCount: m.submissionsCount + 1 }
-          : m
-      )
-    );
-
-    pushNotification(`Submission "${target.title}" was approved. Payout of $${target.revenue} registered.`);
-    showToast(`Approved successfully! Payout of $${target.revenue} added.`);
+  const handleApproveSubmission = async (id: string) => {
+    try {
+      const headers = { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      };
+      const res = await fetch(`http://localhost:3000/api/submissions/${id}/review`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ status: 'approved' })
+      });
+      if (!res.ok) throw new Error('Failed to approve submission');
+      
+      pushNotification(`Approved submission successfully.`);
+      showToast(`Approved successfully!`);
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
   };
 
   // 2. Decline Submission
-  const handleDeclineSubmission = (id: string) => {
-    const target = submissions.find((sub) => sub.id === id);
-    if (!target) return;
-
-    setSubmissions((prev) =>
-      prev.map((sub) => (sub.id === id ? { ...sub, status: 'declined' } : sub))
-    );
-
-    pushNotification(`Submission "${target.title}" was declined during quality review check.`);
-    showToast(`Submission declined during audit check.`, 'info');
+  const handleDeclineSubmission = async (id: string) => {
+    try {
+      const headers = { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      };
+      const res = await fetch(`http://localhost:3000/api/submissions/${id}/review`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ status: 'rejected' })
+      });
+      if (!res.ok) throw new Error('Failed to reject submission');
+      
+      pushNotification(`Declined submission.`);
+      showToast(`Submission declined during audit check.`, 'info');
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
   };
 
-  // 3. Create Custom Member
-  const handleAddMember = (newMem: Omit<Member, 'id' | 'joinedDate' | 'submissionsCount'>) => {
-    const member: Member = {
-      ...newMem,
-      id: `m-${Date.now()}`,
-      joinedDate: new Date().toISOString().split('T')[0],
-      submissionsCount: 0,
-    };
-    setMembers((prev) => [member, ...prev]);
-    pushNotification(`Added contributor: "${member.name}" (Role: ${member.role})`);
-    showToast(`New contributor "${member.name}" registered successfully.`);
+  // 3. Create Custom Member (Invite Member)
+  const handleAddMember = async (newMem: Omit<Member, 'id' | 'joinedDate' | 'submissionsCount'>) => {
+    try {
+      const headers = { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      };
+      const defaultPassword = 'temp_password123!';
+      const res = await fetch('http://localhost:3000/api/auth/invite', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          email: newMem.email,
+          password: defaultPassword,
+          role: newMem.role // 'admin' or 'worker'
+        })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Failed to invite member');
+      }
+      
+      pushNotification(`Created contributor: "${newMem.name}" (Role: ${newMem.role})`);
+      showToast(`New contributor registered. Password: ${defaultPassword}`);
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
   };
 
   // 4. Delete Member
-  const handleDeleteMember = (id: string) => {
-    const target = members.find((m) => m.id === id);
-    if (!target) return;
-
-    setMembers((prev) => prev.filter((m) => m.id !== id));
-    pushNotification(`Contributor "${target.name}" removed from roster.`);
-    showToast(`Member "${target.name}" deleted.`, 'info');
+  const handleDeleteMember = async (id: string) => {
+    try {
+      const headers = { 
+        'Authorization': `Bearer ${token}` 
+      };
+      const res = await fetch(`http://localhost:3000/api/auth/users/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Failed to delete user');
+      }
+      
+      pushNotification(`Member deleted from roster.`);
+      showToast(`Member deleted successfully.`, 'info');
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
   };
 
-  // 5. Create Submission (Via New Asset resource modal)
-  const handleCreateSubmission = (newSub: Omit<Submission, 'id' | 'status' | 'submittedAt'>) => {
-    const submission: Submission = {
-      ...newSub,
-      id: `sub-${Date.now()}`,
-      status: 'pending',
-      submittedAt: 'Just Now',
-    };
-    setSubmissions((prev) => [submission, ...prev]);
-    pushNotification(`New submission upload: "${submission.title}" waiting for quality review.`);
-    showToast(`Resource submitted to pending queue.`);
+  // 5. Create Todo Task
+  const handleAddTask = async (newTask: Omit<Task, 'id'>) => {
+    try {
+      const headers = { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      };
+      const adminId = localStorage.getItem('em_admin_id') || '';
+      const res = await fetch('http://localhost:3000/api/tasks', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          title: newTask.title,
+          description: newTask.description,
+          reward: newTask.reward,
+          createdBy: adminId
+        })
+      });
+      if (!res.ok) throw new Error('Failed to assign task');
+      
+      pushNotification(`Task created: "${newTask.title}"`);
+      showToast(`Task assigned successfully.`);
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
   };
 
-  // 6. Create Todo Task
-  const handleAddTask = (newTask: Omit<Task, 'id'>) => {
-    const task: Task = {
-      ...newTask,
-      id: `task-${Date.now()}`,
-    };
-    setTasks((prev) => [task, ...prev]);
-    pushNotification(`Task created: "${task.title}" (Priority: ${task.priority})`);
-    showToast(`Task assigned successfully.`);
+  // 6. Delete Todo Task
+  const handleDeleteTask = async (id: string) => {
+    try {
+      const headers = { 
+        'Authorization': `Bearer ${token}` 
+      };
+      const res = await fetch(`http://localhost:3000/api/tasks/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      if (!res.ok) throw new Error('Failed to delete task');
+      
+      showToast('Task removed from board.', 'info');
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
   };
 
-  // 7. Update Todo Task Status (Dragging/Toggling column board states)
+  // 7. Update Todo Task Status
   const handleUpdateTaskStatus = (id: string, newStatus: Task['status']) => {
-    const target = tasks.find((t) => t.id === id);
-    if (!target) return;
-
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
-    );
-
-    pushNotification(`Task "${target.title}" updated status to: ${newStatus === 'completed' ? 'Finished' : newStatus}`);
+    // For now status update is local or client-driven
     showToast(`Task status updated!`);
-  };
-
-  // 8. Delete Todo Task
-  const handleDeleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
-    showToast('Task removed from board.', 'info');
   };
 
   // Notification management callbacks
@@ -296,6 +427,28 @@ export default function App() {
     }
   };
 
+  if (!token) {
+    return (
+      <Login 
+        onLoginSuccess={(tok, email, id) => {
+          localStorage.setItem('em_admin_token', tok);
+          localStorage.setItem('em_admin_email', email);
+          localStorage.setItem('em_admin_id', id);
+          setToken(tok);
+          setAdminEmail(email);
+        }}
+      />
+    );
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('em_admin_token');
+    localStorage.removeItem('em_admin_email');
+    localStorage.removeItem('em_admin_id');
+    setToken(null);
+    setAdminEmail(null);
+  };
+
   return (
     <div className="flex w-full h-screen overflow-hidden bg-white dark:bg-[#08090a] transition-all duration-300">
       {/* Left Navigation bar */}
@@ -303,6 +456,8 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={handleSidebarTabSelection}
         onOpenNewTaskModal={() => setIsModalOpen(true)}
+        adminEmail={adminEmail || 'admin@emapex.com'}
+        onLogout={handleLogout}
       />
 
       {/* Main Workspace Frame */}
