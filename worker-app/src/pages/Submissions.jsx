@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import { apiUrl } from '../lib/api';
 
 const Submissions = ({ searchQuery, setSearchQuery }) => {
   const [submissions, setSubmissions] = useState([]);
@@ -20,7 +21,7 @@ const Submissions = ({ searchQuery, setSearchQuery }) => {
         }
 
         // Fetch submissions
-        const subResponse = await fetch(`http://localhost:3000/api/submissions/worker/${workerId}`, {
+        const subResponse = await fetch(apiUrl(`/api/submissions/worker/${workerId}`), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -35,7 +36,7 @@ const Submissions = ({ searchQuery, setSearchQuery }) => {
         const subData = await subResponse.json();
 
         // Fetch tasks to map titles and rewards
-        const tasksResponse = await fetch('http://localhost:3000/api/tasks', {
+        const tasksResponse = await fetch(apiUrl('/api/tasks'), {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
+import { apiUrl } from '../lib/api';
 
 const Earnings = ({ searchQuery, setSearchQuery }) => {
   const [payments, setPayments] = useState([]);
@@ -22,7 +23,7 @@ const Earnings = ({ searchQuery, setSearchQuery }) => {
         }
 
         // Fetch payments
-        const payRes = await fetch(`http://localhost:3000/api/payments/worker/${workerId}`, {
+        const payRes = await fetch(apiUrl(`/api/payments/worker/${workerId}`), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -37,7 +38,7 @@ const Earnings = ({ searchQuery, setSearchQuery }) => {
         const payData = await payRes.json();
 
         // Fetch submissions
-        const subRes = await fetch(`http://localhost:3000/api/submissions/worker/${workerId}`, {
+        const subRes = await fetch(apiUrl(`/api/submissions/worker/${workerId}`), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -49,7 +50,7 @@ const Earnings = ({ searchQuery, setSearchQuery }) => {
         });
 
         // Fetch tasks
-        const tasksRes = await fetch('http://localhost:3000/api/tasks', {
+        const tasksRes = await fetch(apiUrl('/api/tasks'), {
           headers: {
             'Authorization': `Bearer ${token}`
           }

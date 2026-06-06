@@ -1,18 +1,37 @@
+import { lazy, Suspense, useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
-import Tasks from './pages/Tasks'
-import Submissions from './pages/Submissions'
-import Earnings from './pages/Earnings'
-import LearnMore from './pages/LearnMore'
-import ContactUs from './pages/ContactUs'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import { useState } from 'react'
+
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Tasks = lazy(() => import('./pages/Tasks'))
+const Submissions = lazy(() => import('./pages/Submissions'))
+const Earnings = lazy(() => import('./pages/Earnings'))
+const LearnMore = lazy(() => import('./pages/LearnMore'))
+const ContactUs = lazy(() => import('./pages/ContactUs'))
+const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
+
+function PageLoader() {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100vh',
+      background: '#090a0f',
+      color: '#6a6a6a',
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 14,
+    }}>
+      Loading…
+    </div>
+  )
+}
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
@@ -25,6 +44,7 @@ function App() {
       <Route path="/learn-more" element={<LearnMore searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
       <Route path="/contact" element={<ContactUs searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
     </Routes>
+    </Suspense>
   )
 }
 

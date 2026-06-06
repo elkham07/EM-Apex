@@ -52,6 +52,8 @@ services:
     build:
       context: ./services/auth-service
     container_name: emapex_auth_service
+    depends_on:
+      - postgres
     environment:
       - PORT=3001
       - DB_HOST=${DB_HOST}
@@ -230,7 +232,7 @@ services:
 
 networks:
   emapex_net:
-    driver: overlay # Ready for Docker Swarm
+    driver: bridge
     attachable: true
 
 volumes:

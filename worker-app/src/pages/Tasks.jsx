@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 import TaskCard from '../components/TaskCard'
 import TaskModal from '../components/TaskModal'
+import { apiUrl } from '../lib/api'
 
 const Tasks = ({ searchQuery, setSearchQuery }) => {
   const [selectedTask, setSelectedTask] = useState(null)
@@ -21,7 +22,7 @@ const Tasks = ({ searchQuery, setSearchQuery }) => {
           return
         }
 
-        const response = await fetch('http://localhost:3000/api/tasks', {
+        const response = await fetch(apiUrl('/api/tasks'), {
           headers: {
             'Authorization': `Bearer ${token}`
           }

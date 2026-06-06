@@ -7,6 +7,7 @@ import AnnouncementChat from '../components/AnnouncementChat'
 import TaskModal from '../components/TaskModal'
 
 import { useNavigate } from 'react-router-dom'
+import { apiUrl } from '../lib/api'
 
 const Dashboard = ({ searchQuery, setSearchQuery }) => {
   const [selectedTask, setSelectedTask] = useState(null)
@@ -24,7 +25,7 @@ const Dashboard = ({ searchQuery, setSearchQuery }) => {
           return
         }
 
-        const response = await fetch('http://localhost:3000/api/tasks', {
+        const response = await fetch(apiUrl('/api/tasks'), {
           headers: {
             'Authorization': `Bearer ${token}`
           }

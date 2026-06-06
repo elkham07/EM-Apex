@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../lib/api';
 
 const TaskModal = ({ task, onClose }) => {
   const [fileUrl, setFileUrl] = useState('');
@@ -26,7 +27,7 @@ const TaskModal = ({ task, onClose }) => {
         throw new Error('Not authenticated, please login again.');
       }
 
-      const response = await fetch('http://localhost:3000/api/submissions', {
+      const response = await fetch(apiUrl('/api/submissions'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

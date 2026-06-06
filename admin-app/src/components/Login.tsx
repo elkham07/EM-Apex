@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../lib/api';
 
 interface LoginProps {
   onLoginSuccess: (token: string, email: string, userId: string) => void;
+  onShowRegister?: () => void;
 }
 
-export default function Login({ onLoginSuccess }: LoginProps) {
+export default function Login({ onLoginSuccess, onShowRegister }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +22,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch(apiUrl('/api/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -102,7 +104,24 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           </button>
         </form>
 
-        <div className="mt-8 text-center text-4xs font-mono text-neutral-600 uppercase tracking-widest">
+        {onShowRegister && (
+          <p className="mt-6 text-center text-sm text-neutral-400 relative z-10">
+            Need an admin account?{' '}
+            <button
+              type="button"
+              onClick={onShowRegister}
+              className="text-indigo-400 font-semibold hover:text-indigo-300"
+            >
+              Create one
+            </button>
+          </p>
+        )}
+
+        <p className="mt-4 text-center text-4xs text-neutral-600 relative z-10">
+          Dev default: admin@emapex.com / adminpassword
+        </p>
+
+        <div className="mt-6 text-center text-4xs font-mono text-neutral-600 uppercase tracking-widest">
           SECURE PIPELINE PROTECTION ACTIVE
         </div>
       </div>

@@ -51,33 +51,53 @@ app.get('/metrics', async (req, res) => {
   res.end(await client.register.metrics());
 });
 
-// Proxies
-app.use('/api/auth', createProxyMiddleware({ 
-  target: process.env.AUTH_SERVICE_URL || 'http://auth-service:3001', 
-  changeOrigin: true 
-}));
+const proxyOptions = (target, { pathRewrite } = {}) => ({
+  target,
+  changeOrigin: true,
+  proxyTimeout: 30000,
+  pathRewrite,
+  onError: (err, req, res) => {
+    console.error(`[proxy] ${req.method} ${req.url} → ${target}:`, err.message);
+    if (!res.headersSent) {
+      res.status(502).json({ message: 'Upstream service unavailable' });
+    }
+  },
+});
 
-app.use('/api/tasks', createProxyMiddleware({ 
-  target: process.env.TASK_SERVICE_URL || 'http://task-service:3002', 
-  changeOrigin: true 
-}));
+// Auth routes live at /api/auth on the service; Express mount strips that prefix.
+app.use(
+  '/api/auth',
+  createProxyMiddleware(
+    proxyOptions(process.env.AUTH_SERVICE_URL || 'http://auth-service:3001', {
+      pathRewrite: (path) => `/api/auth${path === '/' ? '' : path}`,
+    })
+  )
+);
 
-app.use('/api/submissions', createProxyMiddleware({ 
-  target: process.env.SUBMISSION_SERVICE_URL || 'http://submission-service:3003', 
-  changeOrigin: true 
-}));
+// Task/submission/payment/profile services mount routes at /
+app.use(
+  '/api/tasks',
+  createProxyMiddleware(proxyOptions(process.env.TASK_SERVICE_URL || 'http://task-service:3002'))
+);
+app.use(
+  '/api/submissions',
+  createProxyMiddleware(
+    proxyOptions(process.env.SUBMISSION_SERVICE_URL || 'http://submission-service:3003')
+  )
+);
+app.use(
+  '/api/payments',
+  createProxyMiddleware(
+    proxyOptions(process.env.PAYMENT_SERVICE_URL || 'http://payment-service:3004')
+  )
+);
+app.use(
+  '/api/profile',
+  createProxyMiddleware(
+    proxyOptions(process.env.PROFILE_SERVICE_URL || 'http://profile-service:3006')
+  )
+);
 
-app.use('/api/payments', createProxyMiddleware({ 
-  target: process.env.PAYMENT_SERVICE_URL || 'http://payment-service:3004', 
-  changeOrigin: true 
-}));
-
-app.use('/api/profile', createProxyMiddleware({ 
-  target: process.env.PROFILE_SERVICE_URL || 'http://profile-service:3006', 
-  changeOrigin: true 
-}));
-
-// Start gateway
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`API Gateway is running on port ${PORT}`);
 });

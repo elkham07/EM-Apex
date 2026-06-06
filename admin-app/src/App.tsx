@@ -1,16 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import PendingApprovalsPanel from './components/PendingApprovalsPanel';
 import StatsGrid from './components/StatsGrid';
-import RevenueChart from './components/RevenueChart';
-import MembersView from './components/MembersView';
-import SubmissionsView from './components/SubmissionsView';
-import PaymentsView from './components/PaymentsView';
-import TasksView from './components/TasksView';
 import NewTaskFormModal from './components/NewTaskFormModal';
-import MonitoringView from './components/MonitoringView';
 import Login from './components/Login';
+import Register from './components/Register';
+
+const PendingApprovalsPanel = lazy(() => import('./components/PendingApprovalsPanel'));
+const RevenueChart = lazy(() => import('./components/RevenueChart'));
+const MembersView = lazy(() => import('./components/MembersView'));
+const SubmissionsView = lazy(() => import('./components/SubmissionsView'));
+const PaymentsView = lazy(() => import('./components/PaymentsView'));
+const MonitoringView = lazy(() => import('./components/MonitoringView'));
+
+function TabLoader() {
+  return (
+    <div className="flex items-center justify-center py-24 text-sm text-neutral-500">
+      Loading…
+    </div>
+  );
+}
+import { apiUrl } from './lib/api';
 
 import {
   INITIAL_MEMBERS,
@@ -33,6 +43,7 @@ interface NotificationItem {
 export default function App() {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('em_admin_token'));
   const [adminEmail, setAdminEmail] = useState<string | null>(() => localStorage.getItem('em_admin_email'));
+  const [authView, setAuthView] = useState<'login' | 'register'>('login');
 
   const [members, setMembers] = useState<Member[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -72,10 +83,10 @@ export default function App() {
       const headers = { 'Authorization': `Bearer ${token}` };
       
       const [usersRes, tasksRes, subsRes, paysRes] = await Promise.all([
-        fetch('http://localhost:3000/api/auth/users', { headers }),
-        fetch('http://localhost:3000/api/tasks', { headers }),
-        fetch('http://localhost:3000/api/submissions', { headers }),
-        fetch('http://localhost:3000/api/payments', { headers })
+        fetch(apiUrl('/api/auth/users'), { headers }),
+        fetch(apiUrl('/api/tasks'), { headers }),
+        fetch(apiUrl('/api/submissions'), { headers }),
+        fetch(apiUrl('/api/payments'), { headers })
       ]);
 
       if (usersRes.status === 401 || tasksRes.status === 401) {
@@ -264,7 +275,7 @@ export default function App() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` 
       };
-      const res = await fetch(`http://localhost:3000/api/submissions/${id}/review`, {
+      const res = await fetch(apiUrl(`/api/submissions/${id}/review`), {
         method: 'PUT',
         headers,
         body: JSON.stringify({ status: 'approved' })
@@ -286,7 +297,7 @@ export default function App() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` 
       };
-      const res = await fetch(`http://localhost:3000/api/submissions/${id}/review`, {
+      const res = await fetch(apiUrl(`/api/submissions/${id}/review`), {
         method: 'PUT',
         headers,
         body: JSON.stringify({ status: 'rejected' })
@@ -309,7 +320,7 @@ export default function App() {
         'Authorization': `Bearer ${token}` 
       };
       const defaultPassword = 'temp_password123!';
-      const res = await fetch('http://localhost:3000/api/auth/invite', {
+      const res = await fetch(apiUrl('/api/auth/invite'), {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -337,7 +348,7 @@ export default function App() {
       const headers = { 
         'Authorization': `Bearer ${token}` 
       };
-      const res = await fetch(`http://localhost:3000/api/auth/users/${id}`, {
+      const res = await fetch(apiUrl(`/api/auth/users/${id}`), {
         method: 'DELETE',
         headers
       });
@@ -362,7 +373,7 @@ export default function App() {
         'Authorization': `Bearer ${token}` 
       };
       const adminId = localStorage.getItem('em_admin_id') || '';
-      const res = await fetch('http://localhost:3000/api/tasks', {
+      const res = await fetch(apiUrl('/api/tasks'), {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -388,7 +399,7 @@ export default function App() {
       const headers = { 
         'Authorization': `Bearer ${token}` 
       };
-      const res = await fetch(`http://localhost:3000/api/tasks/${id}`, {
+      const res = await fetch(apiUrl(`/api/tasks/${id}`), {
         method: 'DELETE',
         headers
       });
@@ -428,8 +439,18 @@ export default function App() {
   };
 
   if (!token) {
+    if (authView === 'register') {
+      return (
+        <Register
+          onRegisterSuccess={() => setAuthView('login')}
+          onShowLogin={() => setAuthView('login')}
+        />
+      );
+    }
+
     return (
-      <Login 
+      <Login
+        onShowRegister={() => setAuthView('register')}
         onLoginSuccess={(tok, email, id) => {
           localStorage.setItem('em_admin_token', tok);
           localStorage.setItem('em_admin_email', email);
@@ -505,7 +526,9 @@ export default function App() {
 
                 {/* Chart Segment Layer and Secondary Stats split */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
-                  <RevenueChart data={revenueChartData} />
+                  <Suspense fallback={<TabLoader />}>
+                    <RevenueChart data={revenueChartData} />
+                  </Suspense>
 
                   {/* Tasks Quick overview preview */}
                   <div className="p-6 border border-neutral-200 dark:border-neutral-800 rounded-2xl bg-white dark:bg-[#121315] hover:border-neutral-300 dark:hover:border-neutral-700/80 transition-all select-none flex flex-col justify-between">
@@ -572,12 +595,14 @@ export default function App() {
                 transition={{ duration: 0.25 }}
                 className="max-w-7xl mx-auto"
               >
-                <MembersView
-                  members={members}
-                  onAddMember={handleAddMember}
-                  onDeleteMember={handleDeleteMember}
-                  searchQuery={searchQuery}
-                />
+                <Suspense fallback={<TabLoader />}>
+                  <MembersView
+                    members={members}
+                    onAddMember={handleAddMember}
+                    onDeleteMember={handleDeleteMember}
+                    searchQuery={searchQuery}
+                  />
+                </Suspense>
               </motion.div>
             )}
 
@@ -591,12 +616,14 @@ export default function App() {
                 className="max-w-7xl mx-auto"
               >
                 <div className="w-full">
-                  <SubmissionsView
-                    submissions={submissions}
-                    onApprove={handleApproveSubmission}
-                    onDecline={handleDeclineSubmission}
-                    searchQuery={searchQuery}
-                  />
+                  <Suspense fallback={<TabLoader />}>
+                    <SubmissionsView
+                      submissions={submissions}
+                      onApprove={handleApproveSubmission}
+                      onDecline={handleDeclineSubmission}
+                      searchQuery={searchQuery}
+                    />
+                  </Suspense>
                 </div>
               </motion.div>
             )}
@@ -610,7 +637,9 @@ export default function App() {
                 transition={{ duration: 0.25 }}
                 className="max-w-7xl mx-auto"
               >
-                <PaymentsView payments={payments} searchQuery={searchQuery} />
+                <Suspense fallback={<TabLoader />}>
+                  <PaymentsView payments={payments} searchQuery={searchQuery} />
+                </Suspense>
               </motion.div>
             )}
 
@@ -623,7 +652,9 @@ export default function App() {
                 transition={{ duration: 0.25 }}
                 className="max-w-7xl mx-auto"
               >
-                <MonitoringView />
+                <Suspense fallback={<TabLoader />}>
+                  <MonitoringView />
+                </Suspense>
               </motion.div>
             )}
           </AnimatePresence>
@@ -631,11 +662,13 @@ export default function App() {
       </div>
 
       {/* Right Pending approvals Sidebar */}
-      <PendingApprovalsPanel
-        submissions={submissions}
-        onApprove={handleApproveSubmission}
-        onDecline={handleDeclineSubmission}
-      />
+      <Suspense fallback={null}>
+        <PendingApprovalsPanel
+          submissions={submissions}
+          onApprove={handleApproveSubmission}
+          onDecline={handleDeclineSubmission}
+        />
+      </Suspense>
 
       <NewTaskFormModal
         isOpen={isModalOpen}

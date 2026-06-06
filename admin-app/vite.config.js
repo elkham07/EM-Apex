@@ -10,9 +10,19 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom', 'framer-motion', 'lucide-react'],
+    },
     server: {
-      port: 8081,
-      host: true
+      port: 5174,
+      strictPort: true,
+      host: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+      },
     },
     build: {
       outDir: 'dist'
