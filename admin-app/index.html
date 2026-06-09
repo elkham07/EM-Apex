@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | EM Apex</title>
+    <!-- Apply saved theme class before React mounts to prevent flash -->
+    <script>
+      (function () {
+        try {
+          var dark = JSON.parse(localStorage.getItem('em_dark_mode'));
+          if (dark === false) {
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
