@@ -3,7 +3,9 @@ const cors = require('cors');
 require('dotenv').config();
 const sequelize = require('./config/database');
 const Task = require('./models/Task');
+const Announcement = require('./models/Announcement');
 const taskRoutes = require('./routes/taskRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -13,11 +15,12 @@ app.use(express.json());
 
 // Routes
 app.use('/', taskRoutes);
+app.use('/announcements', announcementRoutes);
 
 const { connectRedis } = require('./config/redis');
 
 // Database connection and server start
-sequelize.sync().then(async () => {
+sequelize.sync({ alter: true }).then(async () => {
   console.log('Database connected and Task model synced');
   
   await connectRedis();

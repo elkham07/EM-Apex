@@ -80,6 +80,14 @@ app.use(
   createProxyMiddleware(proxyOptions(process.env.TASK_SERVICE_URL || 'http://task-service:3002'))
 );
 app.use(
+  '/api/announcements',
+  createProxyMiddleware(
+    proxyOptions(process.env.TASK_SERVICE_URL || 'http://task-service:3002', {
+      pathRewrite: (path) => `/announcements${path === '/' ? '' : path}`,
+    })
+  )
+);
+app.use(
   '/api/submissions',
   createProxyMiddleware(
     proxyOptions(process.env.SUBMISSION_SERVICE_URL || 'http://submission-service:3003')
