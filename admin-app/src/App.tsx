@@ -200,25 +200,39 @@ export default function App() {
     });
     setPayments(mappedPayments);
 
-    // Calculate revenue chart data dynamically
-    if (dbPayments.length > 0) {
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const monthlyRevenueMap: Record<string, number> = {};
-      dbPayments.forEach(p => {
-        if (p.status === 'completed') {
-          const date = new Date(p.createdAt);
-          const monthLabel = `${months[date.getMonth()]} ${date.getFullYear().toString().substring(2)}`;
-          monthlyRevenueMap[monthLabel] = (monthlyRevenueMap[monthLabel] || 0) + parseFloat(p.amount);
-        }
-      });
-      const chartData = Object.keys(monthlyRevenueMap).map(k => ({
-        name: k,
-        revenue: monthlyRevenueMap[k]
-      }));
-      if (chartData.length > 0) {
-        setRevenueChartData(chartData);
-      }
-    }
+    // Calculate revenue chart data dynamically for the last 7 days
+    const last7Days = Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return d;
+    });
+
+    const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const chartData = last7Days.map(day => {
+      const dayEnd = new Date(day);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      // Cumulative revenue: sum of all completed payments created on or before dayEnd
+      const cumulativeRevenue = dbPayments
+        .filter(p => p.status === 'completed' && new Date(p.createdAt) <= dayEnd)
+        .reduce((sum, p) => sum + parseFloat(p.amount), 0);
+
+      // Cumulative workers: count of workers registered on or before dayEnd
+      const cumulativeWorkers = dbUsers
+        .filter(u => u.role === 'worker' && new Date(u.createdAt) <= dayEnd)
+        .length;
+
+      const dateLabel = `${monthsShort[day.getMonth()]} ${day.getDate()}`;
+
+      return {
+        date: dateLabel,
+        revenue: cumulativeRevenue,
+        members: cumulativeWorkers
+      };
+    });
+
+    setRevenueChartData(chartData);
   }, [dbUsers, dbTasks, dbSubmissions, dbPayments]);
 
   useEffect(() => {
@@ -248,24 +262,32 @@ export default function App() {
     ]);
   };
 
-  // Metric Adjustments - Coupling layout states to look perfectly real-time
-  // Total Members starting baseline: 524
-  const currentTotalMembers = 524 + (members.length - INITIAL_MEMBERS.length);
+  // Metric Adjustments - Calculating statistics dynamically from real database data
+  const currentTotalMembers = members.filter((m) => m.role === 'worker').length;
+  const currentActiveTasks = tasks.filter((t) => t.status !== 'completed').length;
+  const currentPendingReviews = submissions.filter((sub) => sub.status === 'pending').length;
+  const currentMonthlyRevenue = payments
+    .filter((p) => p.status === 'success')
+    .reduce((sum, p) => sum + p.amount, 0);
 
-  // Active Tasks starting baseline: 48
-  const currentActiveTasks = 48 + (tasks.filter((t) => t.status !== 'completed').length - INITIAL_TASKS.filter((t) => t.status !== 'completed').length);
+  // Dynamic change statistics for the last 7 days
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  // Pending Reviews starting baseline: 23 (includes the 3 default ones)
-  const currentPendingReviews = 20 + submissions.filter((sub) => sub.status === 'pending').length;
+  const newMembersCount = dbUsers.filter(
+    (u) => u.role === 'worker' && new Date(u.createdAt) >= sevenDaysAgo
+  ).length;
+  const totalMembersChange = `+${newMembersCount}`;
 
-  // Monthly Revenue starting baseline: $12,450
-  // Every approved submission that wasn’t originally approved adds its revenue split!
-  const approvedPendings = submissions.filter((sub) => {
-    const originallyPending = INITIAL_SUBMISSIONS.find((orig) => orig.id === sub.id)?.status === 'pending';
-    const isNew = !INITIAL_SUBMISSIONS.some((orig) => orig.id === sub.id);
-    return (originallyPending || isNew) && sub.status === 'approved';
-  });
-  const currentMonthlyRevenue = 12450 + approvedPendings.reduce((sum, sub) => sum + sub.revenue, 0);
+  const newTasksCount = dbTasks.filter(
+    (t) => t.status === 'active' && new Date(t.createdAt) >= sevenDaysAgo
+  ).length;
+  const activeTasksChange = `+${newTasksCount}`;
+
+  const newPendingReviewsCount = dbSubmissions.filter(
+    (s) => s.status === 'pending' && new Date(s.createdAt) >= sevenDaysAgo
+  ).length;
+  const pendingReviewsChange = `+${newPendingReviewsCount}`;
 
   // ACTIONS HANDLERS
   // 1. Approve Submission
@@ -522,6 +544,9 @@ export default function App() {
                   activeTasks={currentActiveTasks}
                   pendingReviews={currentPendingReviews}
                   monthlyRevenue={currentMonthlyRevenue}
+                  totalMembersChange={totalMembersChange}
+                  activeTasksChange={activeTasksChange}
+                  pendingReviewsChange={pendingReviewsChange}
                 />
 
                 {/* Chart Segment Layer and Secondary Stats split */}
