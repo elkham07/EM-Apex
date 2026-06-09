@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Submission } from '../types';
-import { Filter, Check, X, Search, FileText, DollarSign, Calendar, Eye } from 'lucide-react';
+import { Filter, Check, X, Search, FileText, DollarSign, Calendar, Eye, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubmissionsViewProps {
   submissions: Submission[];
   onApprove: (id: string) => void;
   onDecline: (id: string) => void;
+  onDelete: (id: string) => void;
   searchQuery: string;
 }
 
@@ -14,6 +15,7 @@ export default function SubmissionsView({
   submissions,
   onApprove,
   onDecline,
+  onDelete,
   searchQuery,
 }: SubmissionsViewProps) {
   const [activeFilter, setActiveFilter] = useState<'all' | 'pending' | 'approved' | 'declined'>('all');
@@ -146,6 +148,16 @@ export default function SubmissionsView({
                     >
                       <Eye size={12} />
                       <span>Inspect</span>
+                    </button>
+
+                    {/* Delete button */}
+                    <button
+                      onClick={() => onDelete(sub.id)}
+                      className="p-2 border border-rose-200 dark:border-rose-900/30 rounded-xl text-3xs font-bold text-rose-500 hover:bg-rose-500/10 hover:text-rose-600 flex items-center gap-1 cursor-pointer relative z-10 transition-colors"
+                      title="Delete Submission"
+                    >
+                      <Trash2 size={12} />
+                      <span>Delete</span>
                     </button>
 
                     {/* Actions controllers on hover or if pending */}

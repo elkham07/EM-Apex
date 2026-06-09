@@ -93,3 +93,19 @@ exports.getWorkerSubmissions = async (req, res) => {
   }
 };
 
+// Admin only: Delete a submission entirely
+exports.deleteSubmission = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const submission = await Submission.findByPk(id);
+    if (!submission) {
+      return res.status(404).json({ message: 'Submission not found' });
+    }
+    await submission.destroy();
+    res.status(200).json({ message: 'Submission deleted successfully' });
+  } catch (error) {
+    console.error('Delete submission error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

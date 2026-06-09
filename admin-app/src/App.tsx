@@ -31,7 +31,7 @@ import {
 } from './data';
 import { Member, Submission, Task, Payment } from './types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, ShieldCheck, Sparkles } from 'lucide-react';
+import { Check, X, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
 
 interface NotificationItem {
   id: string;
@@ -334,6 +334,26 @@ export default function App() {
     }
   };
 
+  // Delete Submission
+  const handleDeleteSubmission = async (id: string) => {
+    try {
+      const headers = { 
+        'Authorization': `Bearer ${token}` 
+      };
+      const res = await fetch(apiUrl(`/api/submissions/${id}`), {
+        method: 'DELETE',
+        headers
+      });
+      if (!res.ok) throw new Error('Failed to delete submission');
+      
+      pushNotification(`Deleted submission.`);
+      showToast(`Submission deleted successfully.`, 'info');
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
+  };
+
   // 3. Create Custom Member (Invite Member)
   const handleAddMember = async (newMem: Omit<Member, 'id' | 'joinedDate' | 'submissionsCount'>) => {
     try {
@@ -577,9 +597,9 @@ export default function App() {
                           .map((item) => (
                             <div
                               key={item.id}
-                              className="p-3 border border-neutral-100 dark:border-neutral-800 rounded-xl bg-neutral-50 dark:bg-neutral-900/20 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all flex items-center justify-between gap-4"
+                              className="p-3 border border-neutral-100 dark:border-neutral-800 rounded-xl bg-neutral-50 dark:bg-neutral-900/20 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all flex items-center justify-between gap-4 group"
                             >
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <span className="text-[9px] font-bold text-[#8b5cf6] tracking-wide uppercase">
                                   {item.category}
                                 </span>
@@ -588,15 +608,25 @@ export default function App() {
                                 </p>
                               </div>
 
-                              <span
-                                className={`text-[9px] font-bold uppercase py-0.5 px-1.5 rounded tracking-wide shrink-0 ${
-                                  item.priority === 'high'
-                                    ? 'bg-rose-500/10 text-rose-500'
-                                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
-                                }`}
-                              >
-                                {item.priority}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`text-[9px] font-bold uppercase py-0.5 px-1.5 rounded tracking-wide shrink-0 ${
+                                    item.priority === 'high'
+                                      ? 'bg-rose-500/10 text-rose-500'
+                                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
+                                  }`}
+                                >
+                                  {item.priority}
+                                </span>
+
+                                <button
+                                  onClick={() => handleDeleteTask(item.id)}
+                                  className="p-1 rounded border border-neutral-100 dark:border-neutral-800/80 hover:bg-rose-500/10 text-neutral-400 hover:text-rose-500 dark:hover:text-rose-400 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
+                                  title="Delete Task"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
                             </div>
                           ))}
                       </div>
@@ -646,6 +676,7 @@ export default function App() {
                       submissions={submissions}
                       onApprove={handleApproveSubmission}
                       onDecline={handleDeclineSubmission}
+                      onDelete={handleDeleteSubmission}
                       searchQuery={searchQuery}
                     />
                   </Suspense>

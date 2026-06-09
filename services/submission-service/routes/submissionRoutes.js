@@ -6,5 +6,6 @@ router.post('/', submissionController.submitWork);
 router.put('/:id/review', submissionController.reviewSubmission);
 router.get('/', submissionController.getAllSubmissions);
 router.get('/worker/:workerId', submissionController.getWorkerSubmissions);
+router.delete('/:id', submissionController.deleteSubmission);
 
 module.exports = router;
