@@ -6,6 +6,9 @@ interface StatsGridProps {
   activeTasks: number;
   pendingReviews: number;
   monthlyRevenue: number;
+  totalMembersChange?: string;
+  activeTasksChange?: string;
+  pendingReviewsChange?: string;
 }
 
 export default function StatsGrid({
@@ -13,14 +16,17 @@ export default function StatsGrid({
   activeTasks,
   pendingReviews,
   monthlyRevenue,
+  totalMembersChange = '+0',
+  activeTasksChange = '+0',
+  pendingReviewsChange = '+0',
 }: StatsGridProps) {
   const stats = [
     {
       id: 'stat-members',
       label: 'Total Members',
       val: totalMembers.toLocaleString(),
-      change: '+12',
-      isUp: true,
+      change: totalMembersChange,
+      isUp: !totalMembersChange.startsWith('-'),
       icon: Users,
       color: 'from-blue-500/10 to-transparent text-blue-500 border-blue-500/10 dark:border-blue-500/20',
       textColor: 'text-blue-500 dark:text-blue-400',
@@ -29,8 +35,8 @@ export default function StatsGrid({
       id: 'stat-tasks',
       label: 'Active Tasks',
       val: activeTasks,
-      change: '+5',
-      isUp: true,
+      change: activeTasksChange,
+      isUp: !activeTasksChange.startsWith('-'),
       icon: ClipboardList,
       color: 'from-emerald-500/10 to-transparent text-emerald-500 border-emerald-500/10 dark:border-emerald-500/20',
       textColor: 'text-emerald-500 dark:text-emerald-400',
@@ -39,8 +45,8 @@ export default function StatsGrid({
       id: 'stat-reviews',
       label: 'Pending Reviews',
       val: pendingReviews,
-      change: '+3',
-      isUp: true,
+      change: pendingReviewsChange,
+      isUp: !pendingReviewsChange.startsWith('-'),
       icon: AlertCircle,
       color: 'from-orange-500/10 to-transparent text-orange-500 border-orange-500/10 dark:border-orange-500/20',
       textColor: 'text-orange-500 dark:text-orange-400',

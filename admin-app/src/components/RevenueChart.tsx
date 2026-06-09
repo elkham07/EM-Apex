@@ -30,7 +30,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
   const revenues = data.map((d) => d.revenue);
   const minRevenue = Math.min(...revenues) * 0.95; // 5% buffer bottom
   const maxRevenue = Math.max(...revenues) * 1.05; // 5% buffer top
-  const range = maxRevenue - minRevenue;
+  const range = (maxRevenue - minRevenue) || 100;
 
   // Scale map functions
   const getX = (index: number) => {
