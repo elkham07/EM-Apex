@@ -26,6 +26,22 @@ const Task = sequelize.define('Task', {
   createdBy: {
     type: DataTypes.UUID,
     allowNull: false, // will store Admin User ID
+  },
+  fileUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  deadline: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  accessStatus: {
+    type: DataTypes.ENUM('open', 'closed'),
+    defaultValue: 'closed',
+  },
+  assignedTo: {
+    type: DataTypes.STRING,
+    defaultValue: 'All',
   }
 }, {
   timestamps: true,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Submission } from '../types';
 import { Filter, Check, X, Search, FileText, DollarSign, Calendar, Eye, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiUrl } from '../lib/api';
 
 interface SubmissionsViewProps {
   submissions: Submission[];
@@ -242,10 +243,20 @@ export default function SubmissionsView({
                   </div>
                   <div className="p-3 border border-neutral-100 dark:border-neutral-800 rounded-xl">
                     <span className="text-neutral-400 block">Attached Asset</span>
-                    <button className="text-[10px] font-sans font-bold text-indigo-500 hover:text-indigo-600 mt-1 flex items-center gap-1 cursor-pointer">
-                      <FileText size={12} />
-                      Download PDF workflow
-                    </button>
+                    {selectedSub.description ? (
+                      <a
+                        href={apiUrl(selectedSub.description)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[10px] font-sans font-bold text-indigo-500 hover:text-indigo-600 mt-1 flex items-center gap-1 cursor-pointer"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <FileText size={12} />
+                        Download Asset File
+                      </a>
+                    ) : (
+                      <span className="text-[10px] font-sans font-bold text-neutral-400 mt-1 block">No file attached</span>
+                    )}
                   </div>
                 </div>
 

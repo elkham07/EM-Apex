@@ -24,6 +24,11 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: 'worker',
   },
+  status: {
+    type: DataTypes.ENUM('active', 'suspended'),
+    allowNull: false,
+    defaultValue: 'active',
+  },
 }, {
   timestamps: true,
 });

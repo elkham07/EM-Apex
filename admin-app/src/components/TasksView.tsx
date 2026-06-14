@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Task } from '../types';
+import { Task, Member } from '../types';
 import { ClipboardList, PlusCircle, CheckCircle, Clock, RotateCcw, AlertOctagon, Check, Trash2, Tag, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TasksViewProps {
   tasks: Task[];
+  members: Member[];
   onAddTask: (task: Omit<Task, 'id'>) => void;
   onUpdateTaskStatus: (id: string, newStatus: Task['status']) => void;
+  onUpdateTask?: (id: string, updates: any) => void;
   onDeleteTask: (id: string) => void;
 }
 
 export default function TasksView({
   tasks,
+  members,
   onAddTask,
   onUpdateTaskStatus,
+  onUpdateTask,
   onDeleteTask,
 }: TasksViewProps) {
   const [showForm, setShowForm] = useState(false);
@@ -258,12 +262,42 @@ export default function TasksView({
                               {task.description}
                             </p>
                           )}
+                          {(task as any).deadline && (
+                            <span className="text-[10px] text-neutral-400 mt-1.5 block font-mono">
+                              ⏱️ Limit: {(task as any).deadline}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Access Control Dropdown */}
+                        <div className="mt-3 flex items-center justify-between text-3xs font-mono text-neutral-500">
+                          <span>Access Control:</span>
+                          <select
+                            value={(task as any).accessStatus === 'closed' ? 'closed' : (task.assignedTo === 'All' ? 'all' : task.assignedTo)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              if (val === 'closed') {
+                                onUpdateTask && onUpdateTask(task.id, { accessStatus: 'closed', assignedTo: 'All' });
+                              } else if (val === 'all') {
+                                onUpdateTask && onUpdateTask(task.id, { accessStatus: 'open', assignedTo: 'All' });
+                              } else {
+                                onUpdateTask && onUpdateTask(task.id, { accessStatus: 'open', assignedTo: val });
+                              }
+                            }}
+                            className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 rounded px-1.5 py-0.5 outline-none text-3xs cursor-pointer font-sans"
+                          >
+                            <option value="closed">🔒 Closed (Hidden)</option>
+                            <option value="all">🔓 Open (Everyone)</option>
+                            {members && members.filter(m => m.role === 'worker').map(m => (
+                              <option key={m.id} value={m.id}>🔓 Open (Worker: {m.name})</option>
+                            ))}
+                          </select>
                         </div>
 
                         {/* Footer details row */}
                         <div className="mt-4 pt-3.5 border-t border-neutral-50 dark:border-neutral-800/60 flex items-center justify-between">
                           <span className="text-4xs font-mono text-neutral-500 select-all font-semibold">
-                            BY: {task.assignedTo}
+                            BY: {members.find(m => m.id === task.assignedTo)?.name || task.assignedTo}
                           </span>
 
                           <div className="flex items-center gap-1.5 relative z-10">

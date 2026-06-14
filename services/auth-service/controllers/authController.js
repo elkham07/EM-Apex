@@ -88,7 +88,7 @@ exports.login = async (req, res) => {
     res.status(200).json({ 
       message: 'Login successful',
       token,
-      user: { id: user.id, email: user.email, role: user.role }
+      user: { id: user.id, email: user.email, role: user.role, status: user.status }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -152,7 +152,7 @@ exports.googleCallback = async (req, res) => {
     const payload = { user: { id: user.id, role: user.role } };
     const token = jwt.sign(payload, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '1d' });
 
-    res.redirect(`http://localhost:8080/index.html?token=${token}&workerId=${user.id}`);
+    res.redirect(`http://localhost:8080/index.html?token=${token}&workerId=${user.id}&status=${user.status}`);
   } catch (error) {
     console.error('Google Callback Error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -198,7 +198,7 @@ exports.googleLogin = async (req, res) => {
     res.status(200).json({
       message: 'Google login successful',
       token,
-      user: { id: user.id, email: user.email, role: user.role }
+      user: { id: user.id, email: user.email, role: user.role, status: user.status }
     });
   } catch (error) {
     console.error('Google Login SDK Error:', error);
@@ -210,7 +210,7 @@ exports.googleLogin = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findByPk(id, { attributes: ['id', 'email', 'role'] });
+    const user = await User.findByPk(id, { attributes: ['id', 'email', 'role', 'status'] });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -248,8 +248,20 @@ exports.deleteUser = async (req, res) => {
       return res.status(400).json({ message: 'Cannot delete your own account' });
     }
 
-    await user.destroy();
-    res.status(200).json({ message: 'User deleted successfully' });
+    user.status = 'suspended';
+    await user.save();
+
+    try {
+      const nats = getNats();
+      nats.publish('user.suspended', sc.encode(JSON.stringify({
+        userId: user.id,
+        email: user.email
+      })));
+    } catch (natsErr) {
+      console.error('Failed to publish user.suspended NATS event', natsErr);
+    }
+
+    res.status(200).json({ message: 'User suspended successfully' });
   } catch (error) {
     console.error('DeleteUser error:', error);
     res.status(500).json({ message: 'Internal server error' });

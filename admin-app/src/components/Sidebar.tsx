@@ -13,6 +13,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, a
   const menuItems = [
     { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard },
     { id: 'new-task', name: 'New Task', icon: Plus },
+    { id: 'tasks', name: 'Tasks', icon: ClipboardList },
     { id: 'members', name: 'Members', icon: Users },
     { id: 'submissions', name: 'Submissions', icon: Send },
     { id: 'payments', name: 'Payments', icon: CreditCard },

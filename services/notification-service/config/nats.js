@@ -25,7 +25,7 @@ const connectNats = async () => {
     console.log('Connected to NATS server');
 
     // Subscribe to multiple events
-    const events = ['user.registered', 'submission.created', 'submission.approved', 'payment.completed'];
+    const events = ['user.registered', 'submission.created', 'submission.approved', 'payment.completed', 'user.suspended'];
     
     events.forEach(eventName => {
       const sub = natsConnection.subscribe(eventName);
@@ -63,6 +63,12 @@ const connectNats = async () => {
                 email, 
                 'Payment Received!', 
                 `You have received $${data.amount} for your approved work.`
+              );
+            } else if (eventName === 'user.suspended') {
+              await emailService.sendEmail(
+                data.email, 
+                'Access Restricted', 
+                'Your access to tasks has been permanently closed by the administrator.'
               );
             }
 

@@ -12,6 +12,7 @@ const MembersView = lazy(() => import('./components/MembersView'));
 const SubmissionsView = lazy(() => import('./components/SubmissionsView'));
 const PaymentsView = lazy(() => import('./components/PaymentsView'));
 const MonitoringView = lazy(() => import('./components/MonitoringView'));
+const TasksView = lazy(() => import('./components/TasksView'));
 
 function TabLoader() {
   return (
@@ -122,11 +123,14 @@ export default function App() {
       title: t.title,
       description: t.description,
       category: 'Development',
-      assignedTo: 'Unassigned',
+      assignedTo: t.assignedTo || 'All',
       status: t.status === 'active' ? 'todo' : 'completed',
       priority: 'medium',
       dueDate: new Date(t.createdAt).toLocaleDateString(),
-      reward: parseFloat(t.reward)
+      reward: parseFloat(t.reward),
+      file: t.fileUrl,
+      deadline: t.deadline,
+      accessStatus: t.accessStatus
     }));
     setTasks(mappedTasks);
 
@@ -422,7 +426,11 @@ export default function App() {
           title: newTask.title,
           description: newTask.description,
           reward: newTask.reward,
-          createdBy: adminId
+          createdBy: adminId,
+          deadline: (newTask as any).deadline,
+          fileUrl: (newTask as any).file,
+          accessStatus: 'closed',
+          assignedTo: 'All'
         })
       });
       if (!res.ok) throw new Error('Failed to assign task');
@@ -454,10 +462,35 @@ export default function App() {
     }
   };
 
-  // 7. Update Todo Task Status
-  const handleUpdateTaskStatus = (id: string, newStatus: Task['status']) => {
-    // For now status update is local or client-driven
-    showToast(`Task status updated!`);
+  // 7. Update Todo Task Status / Details
+  const handleUpdateTask = async (id: string, updates: Partial<Task & { fileUrl?: string; accessStatus?: string }>) => {
+    try {
+      const headers = { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      };
+      const backendUpdates: any = { ...updates };
+      if (updates.file !== undefined) backendUpdates.fileUrl = updates.file;
+      if (updates.status !== undefined) {
+        backendUpdates.status = updates.status === 'todo' ? 'active' : 'closed';
+      }
+
+      const res = await fetch(apiUrl(`/api/tasks/${id}`), {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(backendUpdates)
+      });
+      if (!res.ok) throw new Error('Failed to update task');
+      
+      showToast('Task updated successfully.');
+      loadAllData();
+    } catch (err: any) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  const handleUpdateTaskStatus = async (id: string, newStatus: Task['status']) => {
+    await handleUpdateTask(id, { status: newStatus });
   };
 
   // Notification management callbacks
@@ -661,6 +694,28 @@ export default function App() {
               </motion.div>
             )}
 
+            {activeTab === 'tasks' && (
+              <motion.div
+                key="tasks"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+                className="max-w-7xl mx-auto"
+              >
+                <Suspense fallback={<TabLoader />}>
+                  <TasksView
+                    tasks={tasks}
+                    members={members}
+                    onAddTask={handleAddTask}
+                    onUpdateTaskStatus={handleUpdateTaskStatus}
+                    onUpdateTask={handleUpdateTask}
+                    onDeleteTask={handleDeleteTask}
+                  />
+                </Suspense>
+              </motion.div>
+            )}
+
             {activeTab === 'submissions' && (
               <motion.div
                 key="submissions"
@@ -730,6 +785,7 @@ export default function App() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddTask}
+        token={token}
       />
 
       {/* Floating Success Alert Banner Toast notifications */}

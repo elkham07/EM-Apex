@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Megaphone, Loader2 } from 'lucide-react';
+import { Send, Megaphone, Loader2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Announcement {
@@ -27,7 +27,10 @@ export default function AdminChat() {
 
   const fetchAnnouncements = async () => {
     try {
-      const res = await fetch('/api/announcements');
+      const token = localStorage.getItem('em_admin_token');
+      const res = await fetch('/api/announcements', {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (res.ok) {
         const data = await res.json();
         setMessages(data);
@@ -51,9 +54,13 @@ export default function AdminChat() {
     if (!inputText.trim() || sending) return;
     setSending(true);
     try {
+      const token = localStorage.getItem('em_admin_token');
       const res = await fetch('/api/announcements', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ text: inputText.trim(), sentBy: 'Admin' }),
       });
       if (res.ok) {
@@ -64,6 +71,23 @@ export default function AdminChat() {
       console.error('Failed to send announcement:', err);
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const token = localStorage.getItem('em_admin_token');
+      const res = await fetch(`/api/announcements/${id}`, {
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (res.ok) {
+        await fetchAnnouncements();
+      } else {
+        console.error('Failed to delete announcement');
+      }
+    } catch (err) {
+      console.error('Failed to delete announcement:', err);
     }
   };
 
@@ -91,20 +115,30 @@ export default function AdminChat() {
                 key={msg.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex gap-2"
+                className="flex gap-2 group relative justify-between items-start"
               >
-                <div className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                  A
-                </div>
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-[11px] font-bold text-neutral-900 dark:text-neutral-200">{msg.sentBy}</span>
-                    <span className="text-[9px] text-neutral-500">{timeAgo(msg.createdAt)}</span>
+                <div className="flex gap-2">
+                  <div className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                    A
                   </div>
-                  <p className="text-[11px] text-neutral-700 dark:text-neutral-400 mt-0.5 leading-snug bg-neutral-200 dark:bg-neutral-800 p-2 rounded-r-xl rounded-bl-xl">
-                    {msg.text}
-                  </p>
+                  <div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[11px] font-bold text-neutral-900 dark:text-neutral-200">{msg.sentBy}</span>
+                      <span className="text-[9px] text-neutral-500">{timeAgo(msg.createdAt)}</span>
+                    </div>
+                    <p className="text-[11px] text-neutral-700 dark:text-neutral-400 mt-0.5 leading-snug bg-neutral-200 dark:bg-neutral-800 p-2 rounded-r-xl rounded-bl-xl">
+                      {msg.text}
+                    </p>
+                  </div>
                 </div>
+
+                <button
+                  onClick={() => handleDelete(msg.id)}
+                  className="opacity-0 group-hover:opacity-100 p-1 text-neutral-400 hover:text-rose-500 rounded transition-all cursor-pointer mt-1"
+                  title="Delete Announcement"
+                >
+                  <Trash2 size={10} />
+                </button>
               </motion.div>
             ))}
           </AnimatePresence>
