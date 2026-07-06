@@ -40,6 +40,7 @@ const Login = () => {
       localStorage.setItem('em_worker_token', data.token);
       localStorage.setItem('em_worker_id', data.user.id);
       localStorage.setItem('em_worker_email', data.user.email);
+      localStorage.setItem('em_worker_status', data.user.status || 'active');
 
       // Redirect to dashboard
       navigate('/dashboard');

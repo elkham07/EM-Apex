@@ -44,13 +44,38 @@ const Topbar = ({ searchQuery, setSearchQuery }) => {
   // Fetch and build notifications
   const fetchNotifications = useCallback(async () => {
     try {
-      const [annRes, taskRes] = await Promise.all([
-        fetch('/api/announcements'),
-        fetch('/api/tasks'),
-      ])
+      const token = localStorage.getItem('em_worker_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-      const announcements = annRes.ok ? await annRes.json() : []
-      const tasks         = taskRes.ok ? await taskRes.json() : []
+      const [annRes, taskRes] = await Promise.all([
+        fetch('/api/announcements', { headers }),
+        fetch('/api/tasks', { headers }),
+      ]);
+
+      if (taskRes.status === 403) {
+        const taskData = await taskRes.json();
+        if (taskData.suspended) {
+          if (localStorage.getItem('em_worker_status') !== 'suspended') {
+            localStorage.setItem('em_worker_status', 'suspended');
+            localStorage.removeItem('em_worker_token');
+            localStorage.removeItem('em_worker_email');
+            localStorage.removeItem('em_worker_id');
+            window.location.href = '/login';
+            return;
+          }
+        }
+      }
+
+      if (taskRes.status === 401 || annRes.status === 401) {
+        localStorage.removeItem('em_worker_token');
+        localStorage.removeItem('em_worker_email');
+        localStorage.removeItem('em_worker_id');
+        window.location.href = '/login';
+        return;
+      }
+
+      const announcements = annRes.ok ? await annRes.json() : [];
+      const tasks         = taskRes.ok ? await taskRes.json() : [];
 
       const items = [
         ...announcements.map(a => ({
@@ -67,15 +92,24 @@ const Topbar = ({ searchQuery, setSearchQuery }) => {
             time: t.createdAt,
             type: 'task',
           })),
-      ]
+      ];
+
+      if (localStorage.getItem('em_worker_status') === 'suspended') {
+        items.unshift({
+          id: 'suspension-notice',
+          text: '🚨 System: Your access to tasks has been permanently closed by the administrator.',
+          time: new Date().toISOString(),
+          type: 'system',
+        });
+      }
 
       // Sort newest first
-      items.sort((a, b) => new Date(b.time) - new Date(a.time))
-      setNotifications(items.slice(0, 20))
+      items.sort((a, b) => new Date(b.time) - new Date(a.time));
+      setNotifications(items.slice(0, 20));
     } catch (err) {
-      console.error('Failed to fetch notifications:', err)
+      console.error('Failed to fetch notifications:', err);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     fetchNotifications()
@@ -126,7 +160,10 @@ const Topbar = ({ searchQuery, setSearchQuery }) => {
   }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('em_worker_token')
+    localStorage.removeItem('em_worker_id')
+    localStorage.removeItem('em_worker_email')
+    localStorage.removeItem('em_worker_status')
     window.location.href = '/login'
   }
 

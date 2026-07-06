@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { apiUrl } from '../lib/api';
 
 const TaskModal = ({ task, onClose }) => {
-  const [fileUrl, setFileUrl] = useState('');
+  const [uploadFile, setUploadFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -12,8 +12,8 @@ const TaskModal = ({ task, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!fileUrl) {
-      setError('Please provide a file URL or description');
+    if (!uploadFile) {
+      setError('Please select a file to upload');
       return;
     }
     setError('');
@@ -27,6 +27,26 @@ const TaskModal = ({ task, onClose }) => {
         throw new Error('Not authenticated, please login again.');
       }
 
+      // 1. Upload the file
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+
+      const uploadRes = await fetch(apiUrl('/api/submissions/upload'), {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!uploadRes.ok) {
+        const uploadErrData = await uploadRes.json();
+        throw new Error(uploadErrData.message || 'Failed to upload file');
+      }
+
+      const { fileUrl: uploadedFileUrl } = await uploadRes.json();
+
+      // 2. Submit the work record
       const response = await fetch(apiUrl('/api/submissions'), {
         method: 'POST',
         headers: {
@@ -36,7 +56,7 @@ const TaskModal = ({ task, onClose }) => {
         body: JSON.stringify({
           taskId: task.id,
           workerId: workerId,
-          fileUrl: fileUrl
+          fileUrl: uploadedFileUrl
         })
       });
 
@@ -65,8 +85,13 @@ const TaskModal = ({ task, onClose }) => {
         </div>
         
         <div style={contentStyle}>
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', alignItems: 'center' }}>
             {task.tags.map(t => <span key={t} className="task-tag">{t}</span>)}
+            {task.deadline && (
+              <span style={{ fontSize: '11px', color: 'var(--text-3)', fontWeight: 'bold' }}>
+                ⏱️ Limit: {task.deadline}
+              </span>
+            )}
             <span style={{ color: 'var(--green)', fontWeight: '800', marginLeft: 'auto', fontSize: '20px' }}>${task.reward}</span>
           </div>
           
@@ -77,20 +102,19 @@ const TaskModal = ({ task, onClose }) => {
 
           <h4 style={{ marginBottom: '8px', fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-2)' }}>Guidelines & Attachments</h4>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
-            <div style={attachmentStyle}>
-              <span style={{ fontSize: '18px' }}>📄</span>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Brief.pdf</div>
-                <div style={{ fontSize: '10px', color: 'var(--text-3)' }}>1.2 MB</div>
-              </div>
-            </div>
-            <div style={attachmentStyle}>
-              <span style={{ fontSize: '18px' }}>📝</span>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Requirements.doc</div>
-                <div style={{ fontSize: '10px', color: 'var(--text-3)' }}>450 KB</div>
-              </div>
-            </div>
+            {task.file ? (
+              <a href={apiUrl(task.file)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={attachmentStyle}>
+                  <span style={{ fontSize: '18px' }}>📄</span>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 'bold' }}>Task Brief (PDF)</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-3)' }}>Click to view/download plan</div>
+                  </div>
+                </div>
+              </a>
+            ) : (
+              <div style={{ fontSize: '12.5px', color: 'var(--text-3)' }}>No attachments provided for this task.</div>
+            )}
           </div>
 
           {error && (
@@ -106,16 +130,16 @@ const TaskModal = ({ task, onClose }) => {
           ) : showForm ? (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div style={{ textAlign: 'left' }}>
-                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-2)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Work Link / File URL</label>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-2)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Upload Completed Work File</label>
                 <input 
-                  type="text" 
-                  value={fileUrl}
-                  onChange={(e) => setFileUrl(e.target.value)}
+                  type="file" 
+                  accept=".pdf,.zip,.doc,.docx"
+                  onChange={(e) => setUploadFile(e.target.files ? e.target.files[0] : null)}
                   style={{ width: '100%', padding: '10px 12px', background: 'var(--bg-input, #0b0c10)', border: '1px solid var(--border)', borderRadius: '8px', color: '#fff', fontSize: '13px', outline: 'none' }}
-                  placeholder="https://figma.com/file/... or Google Drive link"
                   required
                   disabled={submitting}
                 />
+                <span style={{ fontSize: '10px', color: 'var(--text-3)', display: 'block', marginTop: '4px' }}>Accepts PDF, ZIP, DOC, DOCX</span>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <button type="button" className="btn-pricing" onClick={() => setShowForm(false)} style={{ flex: 1 }} disabled={submitting}>Cancel</button>

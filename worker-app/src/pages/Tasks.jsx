@@ -13,7 +13,13 @@ const Tasks = ({ searchQuery, setSearchQuery }) => {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
+  const isSuspended = localStorage.getItem('em_worker_status') === 'suspended';
+
   useEffect(() => {
+    if (isSuspended) {
+      setLoading(false);
+      return;
+    }
     const fetchTasks = async () => {
       try {
         const token = localStorage.getItem('em_worker_token')
@@ -45,7 +51,9 @@ const Tasks = ({ searchQuery, setSearchQuery }) => {
           new: idx < 3,
           reward: parseFloat(t.reward),
           workers: ['A', 'M', '+2'],
-          tags: ['Development', 'Task']
+          tags: ['Development', 'Task'],
+          file: t.fileUrl,
+          deadline: t.deadline
         }))
         setTasks(mapped)
       } catch (err) {
@@ -56,7 +64,7 @@ const Tasks = ({ searchQuery, setSearchQuery }) => {
     }
 
     fetchTasks()
-  }, [navigate])
+  }, [navigate, isSuspended])
 
   const filteredTasks = tasks.filter(task => 
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -69,30 +77,40 @@ const Tasks = ({ searchQuery, setSearchQuery }) => {
       <main className="main-content" style={{ flex: 1 }}>
         <Topbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
         <div className="content-scroll">
-          <section className="tasks-cards-section">
-            <div className="tasks-cards-header">
-              <div className="tasks-cards-title-wrap">
-                <h3>All Tasks</h3>
-                <span className="tasks-cards-count">{filteredTasks.length} total</span>
-              </div>
-              <p className="tasks-cards-sub">Browse and find the perfect task for your skills</p>
+          {isSuspended ? (
+            <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80%', color: 'var(--text-1)' }}>
+              <div style={{ fontSize: '48px', marginBottom: '20px' }}>🔒</div>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>Access to Tasks Closed</h3>
+              <p style={{ color: 'var(--text-3)', fontSize: '14px', textAlign: 'center', maxWidth: '400px', lineHeight: '1.5' }}>
+                Your access to tasks has been permanently closed by the administrator. You can still access your profile and check earnings history.
+              </p>
             </div>
-
-            {loading ? (
-              <div style={{ padding: '20px', color: 'var(--text-2)' }}>Loading tasks from server...</div>
-            ) : error ? (
-              <div style={{ padding: '20px', color: 'var(--danger)' }}>Error: {error}</div>
-            ) : (
-              <div className="tasks-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
-                {filteredTasks.map(task => (
-                  <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
-                ))}
-                {filteredTasks.length === 0 && (
-                  <div style={{ padding: '20px', color: 'var(--text-3)' }}>No tasks found matching your search.</div>
-                )}
+          ) : (
+            <section className="tasks-cards-section">
+              <div className="tasks-cards-header">
+                <div className="tasks-cards-title-wrap">
+                  <h3>All Tasks</h3>
+                  <span className="tasks-cards-count">{filteredTasks.length} total</span>
+                </div>
+                <p className="tasks-cards-sub">Browse and find the perfect task for your skills</p>
               </div>
-            )}
-          </section>
+
+              {loading ? (
+                <div style={{ padding: '20px', color: 'var(--text-2)' }}>Loading tasks from server...</div>
+              ) : error ? (
+                <div style={{ padding: '20px', color: 'var(--danger)' }}>Error: {error}</div>
+              ) : (
+                <div className="tasks-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+                  {filteredTasks.map(task => (
+                    <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />
+                  ))}
+                  {filteredTasks.length === 0 && (
+                    <div style={{ padding: '20px', color: 'var(--text-3)' }}>No tasks found matching your search.</div>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
         </div>
       </main>
 
