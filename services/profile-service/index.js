@@ -16,7 +16,7 @@ app.use('/', profileRoutes);
 
 const startServer = async () => {
   try {
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     console.log('Database connected and Profile model synced');
 
     await connectNats();
@@ -29,4 +29,3 @@ const startServer = async () => {
   }
 };
 
-startServer();

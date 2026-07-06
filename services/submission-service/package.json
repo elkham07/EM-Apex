@@ -17,7 +17,8 @@
     "nats": "^2.29.3",
     "pg": "^8.21.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "jest": "^30.4.2",

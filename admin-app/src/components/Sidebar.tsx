@@ -21,16 +21,17 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, a
   ];
 
   return (
-    <div className="w-68 h-screen border-r border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0c0d0e]/60 flex flex-col justify-between shrink-0 select-none">
+    <div className="w-64 h-screen border-r border-wz-line dark:border-neutral-800 bg-wz-bg-soft dark:bg-[#0c0d0e]/60 flex flex-col justify-between shrink-0 select-none">
       <div className="flex flex-col flex-1 py-6 px-4">
         {/* Brand Header */}
         <div className="flex items-center gap-3 px-3 mb-8">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white font-semibold text-lg shadow-lg shadow-indigo-500/10">
-            E
-          </div>
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+            <rect width="24" height="24" rx="6" fill="#26332f" />
+            <path d="M6 18L18 6M10 18L18 10M6 14L14 6" stroke="#6fa98f" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
           <div>
-            <div className="font-semibold text-sm tracking-tight text-neutral-900 dark:text-neutral-50 flex items-center gap-1.5">
-              EM<span className="text-xs px-1.5 py-0.5 rounded-md bg-indigo-500/10 dark:bg-indigo-400/15 text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider scale-90 origin-left">Apex</span>
+            <div className="font-serif font-semibold text-base tracking-tight text-neutral-900 dark:text-neutral-50 flex items-center gap-0.5">
+              Work<span className="italic font-medium text-wz-sage-deep dark:text-wz-sage">zounds</span>
             </div>
           </div>
         </div>
@@ -39,7 +40,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, a
         <button
           onClick={onOpenNewTaskModal}
           id="sidebar-create-task-btn"
-          className="w-full py-2.5 px-4 mb-8 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-medium text-sm flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 active:scale-98 transition-all cursor-pointer"
+          className="w-full py-2.5 px-4 mb-8 bg-wz-ink hover:bg-wz-sage-deep text-[#f4faf7] rounded-xl font-medium text-sm flex items-center justify-center gap-2 shadow-md shadow-wz-sage-deep/10 active:scale-98 transition-all cursor-pointer"
         >
           <Plus size={16} />
           <span>New Task</span>
@@ -48,7 +49,7 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, a
         {/* Navigation Items */}
         <div className="space-y-6">
           <div>
-            <span className="px-3 text-2xs font-bold tracking-widest text-neutral-400 dark:text-neutral-500 uppercase">
+            <span className="px-3 text-2xs font-bold tracking-widest text-neutral-400 dark:text-neutral-500 uppercase font-mono">
               Admin
             </span>
             <nav className="mt-3 space-y-1">
@@ -68,14 +69,14 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, a
                     {isActive && (
                       <motion.div
                         layoutId="active-nav-indicator"
-                        className="absolute inset-0 bg-neutral-200/50 dark:bg-neutral-800/50 border-l-2 border-indigo-500 dark:border-indigo-400 rounded-xl"
+                        className="absolute inset-0 bg-neutral-200/50 dark:bg-neutral-800/50 border-l-2 border-wz-sage-deep dark:border-wz-sage rounded-xl"
                         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                       />
                     )}
                     <Icon
                       size={18}
                       className={`relative z-10 ${
-                        isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-neutral-400'
+                        isActive ? 'text-wz-sage-deep dark:text-wz-sage' : 'text-neutral-400'
                       }`}
                     />
                     <span className="relative z-10">{item.name}</span>
@@ -88,9 +89,9 @@ export default function Sidebar({ activeTab, setActiveTab, onOpenNewTaskModal, a
       </div>
 
       {/* Sidebar Footer Identity & Status */}
-      <div className="p-4 border-t border-neutral-200 dark:border-neutral-800/80 bg-neutral-100/50 dark:bg-neutral-900/40 flex flex-col gap-3">
+      <div className="p-4 border-t border-wz-line dark:border-neutral-800/80 bg-wz-bg-soft dark:bg-neutral-900/40 flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-xs text-white uppercase">
+          <div className="w-8 h-8 rounded-full bg-wz-sage-deep flex items-center justify-center font-bold text-xs text-white uppercase">
             {adminEmail.substring(0, 1)}
           </div>
           <div className="flex-1 min-w-0">

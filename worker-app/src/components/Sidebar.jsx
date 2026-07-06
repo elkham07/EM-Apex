@@ -14,13 +14,18 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar" id="sidebar">
-      <div className="sidebar-logo">
-        <div className="logo-icon">E</div>
-        <span className="logo-text">EM<sup>Apex</sup></span>
+      <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '16px', marginBottom: '8px' }}>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0" style={{ display: 'block' }}>
+          <rect width="24" height="24" rx="6" fill="#26332f" />
+          <path d="M6 18L18 6M10 18L18 10M6 14L14 6" stroke="#6fa98f" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+        <span className="logo-text" style={{ fontSize: '18px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '2px', color: 'var(--text-1)' }}>
+          Work<span style={{ fontStyle: 'italic', fontWeight: 'normal', color: 'var(--text-3)' }}>zounds</span>
+        </span>
       </div>
 
       <nav className="nav-section">
-        <p className="nav-label">EM APEX</p>
+        <p className="nav-label">WORKZOUNDS</p>
         <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
           Dashboard

@@ -63,10 +63,10 @@ export default function StatsGrid({
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-            className="p-5 border border-neutral-200 dark:border-neutral-800 rounded-2xl bg-white dark:bg-[#121315] hover:border-neutral-300 dark:hover:border-neutral-700/80 transition-all select-none group flex flex-col justify-between"
+            className="p-5 border border-wz-line dark:border-neutral-800 rounded-2xl bg-wz-bg dark:bg-[#121315] hover:border-wz-sage dark:hover:border-neutral-700/80 transition-all select-none group flex flex-col justify-between"
           >
             <div className="flex items-center justify-between">
-              <span className="text-2xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">
+              <span className="text-2xs font-bold text-wz-ink-soft dark:text-neutral-500 uppercase tracking-widest font-mono">
                 {item.label}
               </span>
               <div
@@ -77,7 +77,7 @@ export default function StatsGrid({
             </div>
 
             <div className="mt-4 flex items-baseline justify-between">
-              <span className="text-2xl font-bold font-sans tracking-tight text-neutral-950 dark:text-neutral-50">
+              <span className="text-2xl font-bold font-sans tracking-tight text-wz-ink dark:text-neutral-50">
                 {item.val}
               </span>
               {/* Green active status tags matching screenshot */}

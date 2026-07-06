@@ -52,22 +52,26 @@ const Login = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#090a0f', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-base)', color: 'var(--text-1)', fontFamily: 'var(--font-sans)' }}>
       <div className="auth-box" style={{ 
-        background: '#13141c', 
+        background: 'var(--bg-card)', 
         padding: '40px', 
-        borderRadius: '20px', 
+        borderRadius: 'var(--radius-lg)', 
         width: '420px', 
         textAlign: 'center', 
-        border: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+        border: '1px solid var(--border)',
+        boxShadow: 'var(--shadow)'
       }}>
-        <div className="logo-text" style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px', display: 'inline-block', letterSpacing: '-0.5px' }}>
-          EM<span style={{ color: 'var(--accent, #5b6aff)' }}>Apex</span>
+        <div className="logo-text" style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px', display: 'inline-flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.5px' }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+            <rect width="24" height="24" rx="6" fill="#26332f" />
+            <path d="M6 18L18 6M10 18L18 10M6 14L14 6" stroke="#6fa98f" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-1)' }}>Work<span style={{ fontStyle: 'italic', fontWeight: 'normal', color: 'var(--text-3)' }}>zounds</span></span>
         </div>
-        <p style={{ color: 'var(--text-3, #6a6a6a)', fontSize: '13px', marginBottom: '30px' }}>Worker Portal</p>
+        <p style={{ color: 'var(--text-2)', fontSize: '13px', marginBottom: '30px' }}>Coder Portal</p>
         
-        <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', letterSpacing: '-0.3px' }}>Welcome Back</h2>
+        <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', letterSpacing: '-0.3px', fontFamily: 'var(--font-serif)' }}>Welcome Back</h2>
         
         {error && (
           <div style={{ 
@@ -86,26 +90,26 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
           <div style={{ textAlign: 'left', marginBottom: '16px' }}>
-            <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-2, #b0b0b0)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>Email Address</label>
+            <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>Email Address</label>
             <input 
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="search-input" 
-              style={{ width: '100%', padding: '12px 16px', background: '#0b0c10', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none' }} 
-              placeholder="name@example.com" 
+              style={{ width: '100%', padding: '12px 16px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)', fontSize: '14px', outline: 'none' }} 
+              placeholder="name@workzounds.com" 
               required
             />
           </div>
 
           <div style={{ textAlign: 'left', marginBottom: '24px' }}>
-            <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-2, #b0b0b0)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>Password</label>
+            <label style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px', fontFamily: 'var(--font-mono)' }}>Password</label>
             <input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="search-input" 
-              style={{ width: '100%', padding: '12px 16px', background: '#0b0c10', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none' }} 
+              style={{ width: '100%', padding: '12px 16px', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text-1)', fontSize: '14px', outline: 'none' }} 
               placeholder="••••••••" 
               required
             />
@@ -113,29 +117,29 @@ const Login = () => {
 
           <button 
             type="submit" 
-            className="btn-summarize" 
             disabled={loading}
             style={{ 
               width: '100%', 
               padding: '13px', 
               fontSize: '14px',
               fontWeight: '600',
-              borderRadius: '10px', 
-              background: 'linear-gradient(135deg, #5b6aff 0%, #7c87ff 100%)', 
-              color: '#fff', 
+              borderRadius: 'var(--radius-md)', 
+              background: 'var(--accent)', 
+              color: '#f4faf7', 
               cursor: 'pointer',
               opacity: loading ? 0.7 : 1,
               border: 'none',
-              boxShadow: '0 4px 15px rgba(91, 106, 255, 0.3)'
+              transition: 'all 0.2s',
+              fontFamily: 'var(--font-sans)',
             }}
           >
             {loading ? 'Logging in...' : 'Sign In'}
           </button>
         </form>
 
-        <p style={{ marginTop: '24px', fontSize: '13px', color: 'var(--text-2, #b0b0b0)' }}>
+        <p style={{ marginTop: '24px', fontSize: '13px', color: 'var(--text-2)' }}>
           Don't have an account?{' '}
-          <Link to="/register" style={{ color: '#7c87ff', fontWeight: '600', textDecoration: 'none' }}>
+          <Link to="/register" style={{ color: 'var(--text-3)', fontWeight: '600', textDecoration: 'none' }}>
             Register here
           </Link>
         </p>

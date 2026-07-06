@@ -1,39 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
 /* ═══════════════════════════════
    TOKENS & RESET
 ═══════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-base:    #0f0f0f;
-  --bg-card:    #181818;
-  --bg-card2:   #1e1e1e;
-  --bg-hover:   #242424;
-  --bg-input:   #161616;
-  --border:     rgba(255,255,255,0.07);
-  --border-md:  rgba(255,255,255,0.12);
+  --font-serif: 'Fraunces', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  --text-1:  #ffffff;
-  --text-2:  #b0b0b0;
-  --text-3:  #6a6a6a;
+  /* Default Workzounds Dark Mode */
+  --bg-base:    #08090a;
+  --bg-card:    #121315;
+  --bg-card2:   #181a1d;
+  --bg-hover:   #1c2220;
+  --bg-input:   #181a1d;
+  --border:     #1e2523;
+  --border-md:  #487a63;
 
-  --accent:  #5b6aff;
-  --accent2: #7c87ff;
+  --text-1:  #f4faf7;
+  --text-2:  #c8d2ce;
+  --text-3:  #6fa98f;
+
+  --accent:  #6fa98f; /* Workzounds Sage */
+  --accent2: #487a63; /* Workzounds Sage Deep */
   --danger:  #ff5c5c;
-  --green:   #22c55e;
-  --teal:    #14b8a6;
+  --green:   #6fa98f;
+  --teal:    #487a63;
 
   --sidebar-w: 210px;
   --right-w:   270px;
-  --radius-lg: 18px;
-  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
   --radius-sm: 8px;
-  --shadow:    0 4px 24px rgba(0,0,0,0.5);
+  --shadow:    0 4px 24px rgba(0,0,0,0.4);
 
   --transition: 0.2s cubic-bezier(.4,0,.2,1);
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   background: var(--bg-base);
   color: var(--text-1);
   display: flex;
@@ -759,14 +766,31 @@ svg { display: block; flex-shrink: 0; }
    THEME TOGGLE LIGHT
 ═══════════════════════════════ */
 body.light-theme {
-  --bg-base:   #f4f4f5;
-  --bg-card:   #ffffff;
-  --bg-card2:  #f8f8fa;
-  --bg-hover:  #ededf0;
-  --bg-input:  #ffffff;
-  --border:    rgba(0,0,0,0.08);
-  --border-md: rgba(0,0,0,0.14);
-  --text-1:    #0f0f0f;
-  --text-2:    #555;
-  --text-3:    #999;
+  --bg-base:    #f5faf7; /* wz-bg-soft */
+  --bg-card:    #ffffff; /* wz-bg */
+  --bg-card2:   #ffffff;
+  --bg-hover:   #e5f2ec; /* wz-sage-tint */
+  --bg-input:   #ffffff;
+  --border:     #e2ebe6; /* wz-line */
+  --border-md:  #6fa98f; /* wz-sage */
+  --text-1:     #26332f; /* wz-ink */
+  --text-2:     #5b6b66; /* wz-ink-soft */
+  --text-3:     #6fa98f; /* wz-sage */
 }
+
+h1, h2, h3, h4, .logo-text, .font-serif {
+  font-family: var(--font-serif) !important;
+  font-weight: 500;
+}
+
+.wz-thread-rule {
+  height: 10px;
+  width: 100%;
+  background-image: repeating-linear-gradient(-55deg, var(--border) 0 2px, transparent 2px 14px);
+  opacity: 0.9;
+}
+
+.wz-stitch-corner {
+  background-image: repeating-linear-gradient(-55deg, var(--bg-hover) 0 2px, transparent 2px 8px);
+}
+

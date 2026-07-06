@@ -19,7 +19,7 @@ app.use('/', submissionRoutes);
 // Initialize everything
 const startServer = async () => {
   try {
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     console.log('Database connected and Submission model synced');
 
     await connectNats();
@@ -32,4 +32,3 @@ const startServer = async () => {
   }
 };
 
-startServer();

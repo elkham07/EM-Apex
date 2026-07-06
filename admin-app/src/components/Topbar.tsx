@@ -33,7 +33,7 @@ export default function Topbar({
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="h-16 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-[#0c0d0e]/80 backdrop-blur-md flex items-center justify-between px-8 z-20">
+    <div className="h-16 border-b border-wz-line dark:border-neutral-800 bg-wz-bg/80 dark:bg-[#0c0d0e]/80 backdrop-blur-md flex items-center justify-between px-8 z-20">
       {/* Central Search with icon */}
       <div className="relative w-96 max-w-lg">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500" size={16} />
@@ -42,7 +42,7 @@ export default function Topbar({
           placeholder="Search for member, task or submission..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full h-10 pl-11 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-sm placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 hover:border-neutral-300 dark:hover:border-neutral-700 transition-all text-neutral-800 dark:text-neutral-100"
+          className="w-full h-10 pl-11 pr-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-sm placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-wz-sage/20 focus:border-wz-sage hover:border-neutral-300 dark:hover:border-neutral-700 transition-all text-neutral-800 dark:text-neutral-100"
         />
         {searchQuery && (
           <button
@@ -63,7 +63,7 @@ export default function Topbar({
           className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-950 border border-neutral-100 dark:border-neutral-800/60 transition-all cursor-pointer"
           title="Toggle UI Theme"
         >
-          {darkMode ? <Sun size={18} className="text-amber-400 animate-spin-slow" /> : <Moon size={18} className="text-indigo-600" />}
+          {darkMode ? <Sun size={18} className="text-amber-400 animate-spin-slow" /> : <Moon size={18} className="text-wz-sage-deep" />}
         </button>
 
         {/* Dynamic Alerts system with Dropdown */}
@@ -75,7 +75,7 @@ export default function Topbar({
           >
             <Bell size={18} />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-neutral-950" />
+              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-wz-sage ring-2 ring-white dark:ring-neutral-950" />
             )}
           </button>
 
@@ -91,12 +91,12 @@ export default function Topbar({
                 >
                   <div className="p-4 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
                     <span className="text-xs font-bold text-neutral-900 dark:text-neutral-50 tracking-wide uppercase flex items-center gap-1.5">
-                      <Sparkles size={12} className="text-indigo-500" /> Notifications
+                      <Sparkles size={12} className="text-wz-sage" /> Notifications
                     </span>
                     {unreadCount > 0 && (
                       <button
                         onClick={onClearNotifications}
-                        className="text-2xs text-indigo-600 dark:text-indigo-400 hover:underline uppercase font-bold tracking-wide cursor-pointer"
+                        className="text-2xs text-wz-sage-deep dark:text-wz-sage hover:underline uppercase font-bold tracking-wide cursor-pointer"
                       >
                         Clear All
                       </button>
@@ -114,7 +114,7 @@ export default function Topbar({
                         <div
                           key={notif.id}
                           className={`p-4 transition-all hover:bg-neutral-50 dark:hover:bg-neutral-900/60 ${
-                            !notif.read ? 'bg-indigo-500/5' : ''
+                            !notif.read ? 'bg-wz-sage-tint/30' : ''
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -124,7 +124,7 @@ export default function Topbar({
                             {!notif.read && (
                               <button
                                 onClick={() => onMarkNotificationRead(notif.id)}
-                                className="p-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                className="p-1 rounded bg-wz-sage-tint hover:bg-wz-sage/20 text-wz-sage-deep dark:text-wz-sage hover:scale-105 active:scale-95 transition-all cursor-pointer"
                                 title="Mark as read"
                               >
                                 <Check size={10} />
@@ -163,10 +163,10 @@ export default function Topbar({
                   className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#121315] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xl z-40 overflow-hidden p-4"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">A</div>
+                    <div className="w-10 h-10 rounded-full bg-wz-sage-deep text-white flex items-center justify-center font-bold">A</div>
                     <div>
                       <div className="text-sm font-bold text-neutral-900 dark:text-white">Admin User</div>
-                      <div className="text-xs text-neutral-500">admin@emapex.com</div>
+                      <div className="text-xs text-neutral-500">admin@workzounds.com</div>
                     </div>
                   </div>
                   <button 
@@ -187,7 +187,7 @@ export default function Topbar({
         {/* Avatar badge matching screenshot */}
         <div 
           onClick={() => setShowSettings(!showSettings)}
-          className="h-10 w-10 rounded-full border border-neutral-200 dark:border-neutral-800 flex items-center justify-center bg-indigo-600 text-white font-semibold text-sm select-none shadow-md shadow-indigo-600/10 shrink-0 cursor-pointer"
+          className="h-10 w-10 rounded-full border border-neutral-200 dark:border-neutral-800 flex items-center justify-center bg-wz-sage-deep text-white font-semibold text-sm select-none shadow-md shadow-wz-sage-deep/10 shrink-0 cursor-pointer"
         >
           A
         </div>

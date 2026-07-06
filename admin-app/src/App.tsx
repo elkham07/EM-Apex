@@ -546,13 +546,13 @@ export default function App() {
   };
 
   return (
-    <div className="flex w-full h-screen overflow-hidden bg-white dark:bg-[#08090a] transition-all duration-300">
+    <div className="flex w-full h-screen overflow-hidden bg-wz-bg dark:bg-[#08090a] transition-all duration-300">
       {/* Left Navigation bar */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={handleSidebarTabSelection}
         onOpenNewTaskModal={() => setIsModalOpen(true)}
-        adminEmail={adminEmail || 'admin@emapex.com'}
+        adminEmail={adminEmail || 'admin@workzounds.com'}
         onLogout={handleLogout}
       />
 
@@ -617,7 +617,7 @@ export default function App() {
                         </h4>
                         <button
                           onClick={() => setActiveTab('submissions')}
-                          className="text-3xs font-bold text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer uppercase tracking-wider"
+                          className="text-3xs font-bold text-wz-sage-deep hover:text-wz-sage dark:text-wz-sage dark:hover:text-wz-sage/80 cursor-pointer uppercase tracking-wider font-mono"
                         >
                           Show Board
                         </button>
@@ -798,11 +798,13 @@ export default function App() {
             className={`fixed bottom-6 right-6 p-4 rounded-2xl flex items-center gap-3 shadow-xl z-50 border max-w-sm ${
               toast.type === 'success'
                 ? 'bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-500/20 text-emerald-800 dark:text-emerald-300'
-                : 'bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-500/20 text-indigo-800 dark:text-indigo-300'
+                : toast.type === 'error'
+                ? 'bg-rose-500/10 dark:bg-rose-500/20 border-rose-500/20 text-rose-800 dark:text-rose-300'
+                : 'bg-wz-sage-tint dark:bg-wz-sage/20 border-wz-sage/20 text-wz-sage-deep dark:text-wz-sage'
             }`}
           >
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-              toast.type === 'success' ? 'bg-emerald-500/20' : 'bg-indigo-500/20'
+              toast.type === 'success' ? 'bg-emerald-500/20' : toast.type === 'error' ? 'bg-rose-500/20' : 'bg-wz-sage-tint'
             }`}>
               <Sparkles size={16} />
             </div>

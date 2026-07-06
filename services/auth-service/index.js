@@ -28,7 +28,7 @@ app.use('/api/auth', authRoutes);
 const { connectNats } = require('./config/nats');
 
 // Database connection and server start
-sequelize.sync().then(async () => {
+sequelize.sync({ alter: true }).then(async () => {
   console.log('Database connected and models synced');
   
   // Seed default admin user
@@ -55,5 +55,4 @@ sequelize.sync().then(async () => {
     console.log(`Auth Service is running on port ${PORT}`);
   });
 }).catch((err) => {
-  console.error('Unable to connect to the database:', err);
-});
+  console.error('Unable to connect to the databas
